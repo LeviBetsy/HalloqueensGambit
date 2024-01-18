@@ -11,7 +11,6 @@ public enum Side {
         return name;
     }
 
-
     Side(int rate, String name){
         this.rateMult = rate;
         this.name = name;

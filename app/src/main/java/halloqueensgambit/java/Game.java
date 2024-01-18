@@ -1,6 +1,8 @@
 package halloqueensgambit.java;
 import halloqueensgambit.java.piece.Piece;
 
+import java.util.ArrayList;
+
 public class Game {
     private Side side;
     private Board board;
@@ -10,6 +12,10 @@ public class Game {
         this.board = board;
         this.turn = turn;
     }
+
+
+
+    /*                           DATATYPE                           */
     public static record Pos(int x, int y) implements Comparable<Pos> {
         @Override
         public int compareTo(Pos other) {
@@ -22,8 +28,34 @@ public class Game {
             return Integer.compare(this.y, other.y);
         }
     }
-        //need to have a record of Move to check whether player's move is legal or not
-    public static record Move(Pos start, Pos end){};
+
+    //need to have a record of Move to check whether player's move is legal or not
+    public static record Move(Piece p, Pos start, Pos end){};
+
+    public static record OffSet(int dx, int dy){};
+
+    /*                                METHODS                                */
+
+    public static boolean inBound(Game.Pos pos){
+        return (pos.x() >= 1 && pos.x() <= 8 && pos.y() >= 1 && pos.y() <= 8);
+    }
+
+    public ArrayList<Move> legalMoves(){
+        return board.legalMoves(this.side);
+    }
+
+    public ArrayList<Game> nextGames(){
+        ArrayList<Game> result = new ArrayList<>();
+        for (Move m : this.legalMoves()){
+            Board nextBoard = this.board.modifyBoard(m);
+            if (this.side == Side.BLACK){
+                result.add(new Game(Side.WHITE, nextBoard, this.turn - 1));
+            } else {
+                result.add(new Game(Side.BLACK, nextBoard, this.turn - 1));
+            }
+        }
+        return result;
+    }
 
     //TODO: Stringbuilder and make this look better
     @Override
