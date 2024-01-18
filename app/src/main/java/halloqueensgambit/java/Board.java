@@ -9,6 +9,13 @@ public class Board {
     public Board(TreeMap<Pos, Piece> data){
         this.data = data;
     }
+    public Board() {
+        this.data = new TreeMap<>();
+    }
+
+    public void addToBoard(Pos pos, Piece piece){
+        this.data.put(pos, piece);
+    }
 
     public Board modifyBoard(Move move){
         TreeMap<Pos, Piece> newData = new TreeMap<>(data);
@@ -22,6 +29,7 @@ public class Board {
     public String toString(){
         String result = "";
         for (int y = 8; y >= 1; y--){
+            result += Integer.toString(y) + "  ";
             for (int x = 1; x <= 8; x++){
                 Piece current = data.get(new Pos(x, y));
 
@@ -36,7 +44,7 @@ public class Board {
             }
             if (y != 1) {
                 result += "\n";
-                result += "-------------------------------";
+                result += "   -------------------------------";
                 result += "\n";
             }
         }
