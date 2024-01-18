@@ -1,4 +1,5 @@
-B 3
+3
+B
 r _ b _ k _ _ r
 p p p p q p p p
 _ _ _ _ _ _ _ _
