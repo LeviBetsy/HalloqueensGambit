@@ -19,27 +19,7 @@ public class App {
     public String getGreeting() {
         return "Hello World!";
     }
-
-//    public void initialBoard() {
-//        TreeMap<Pos, Piece>  initialBoardTree = new TreeMap<>();
-//        initialBoardTree.put(new Pos(1,1), new Rook(WHITE));
-//        initialBoardTree.put(new Pos(2,1), new Knight(WHITE));
-//        Board board = new Board(initialBoardTree);
-//        System.out.println(board.toString());
-//    }
-//
-//    public void initialGame() {
-//        TreeMap<Pos, Piece>  initialBoardTree = new TreeMap<>();
-//        initialBoardTree.put(new Pos(1,1), new Rook(WHITE));
-//        initialBoardTree.put(new Pos(2,1), new Knight(WHITE));
-//        Board board = new Board(initialBoardTree);
-//        Game g = new Game(WHITE, board, 5);
-//        System.out.println(g.toString());
-//    }
-
     public static void main(String[] args) throws IOException {
-//        System.out.println(new App().getGreeting());
-
         String fileName;
         if (args.length == 0){
             fileName = "initialGame.txt";
@@ -49,15 +29,14 @@ public class App {
         Game game = scanGame(fileName);
         System.out.println(game);
     }
+    /*                                IO TO SCAN GAME FROM TXT FILES                               */
 
     public static Game scanGame(String fileName) throws IOException {
         // Resolve the file path
-
         String currentDirectory = System.getProperty("user.dir");
         // Connect the filepath
         Path filePath = Paths.get(currentDirectory, "src/main/java/halloqueensgambit/java/games", fileName);
         Scanner scanner = new Scanner(filePath);
-
 
         int turn = Integer.parseInt(scanner.nextLine());
         Side side = (scanner.nextLine().equals("B")) ? BLACK : WHITE;

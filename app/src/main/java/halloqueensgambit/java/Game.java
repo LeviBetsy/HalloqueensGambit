@@ -10,6 +10,10 @@ public class Game {
         this.board = board;
         this.turn = turn;
     }
+
+
+
+    /*                           DATATYPE                           */
     public static record Pos(int x, int y) implements Comparable<Pos> {
         @Override
         public int compareTo(Pos other) {
@@ -22,8 +26,17 @@ public class Game {
             return Integer.compare(this.y, other.y);
         }
     }
-        //need to have a record of Move to check whether player's move is legal or not
-    public static record Move(Pos start, Pos end){};
+
+    //need to have a record of Move to check whether player's move is legal or not
+    public static record Move(Piece p, Pos start, Pos end){};
+
+    public static record OffSet(int dx, int dy){};
+
+    /*                                METHODS                                */
+
+    public static boolean inBound(Game.Pos pos){
+        return (pos.x() >= 1 && pos.x() <= 8 && pos.y() >= 1 && pos.y() <= 8);
+    }
 
     //TODO: Stringbuilder and make this look better
     @Override
