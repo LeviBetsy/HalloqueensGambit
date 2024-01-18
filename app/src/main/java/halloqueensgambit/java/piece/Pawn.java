@@ -35,7 +35,7 @@ public class Pawn implements Piece{
     @Override
     public ArrayList<Game.Move> allLegalMove(Game.Pos start, Board board){
         ArrayList<Game.Move> result = new ArrayList<>();
-        if (this.side == WHITE){
+        if (this.side == WHITE){ //WHITE PAWN
             Game.Pos pushOnce = new Game.Pos(start.x(), start.y()+ 1);
             if (board.lookupBoard(pushOnce).isEmpty() ){
                 result.add(new Game.Move(this, start, pushOnce));
@@ -56,7 +56,7 @@ public class Pawn implements Piece{
                     result.add(new Game.Move(this, start, p));
                 }
             }
-        } else {
+        } else { //BLACK PAWN
             Game.Pos pushOnce = new Game.Pos(start.x(), start.y()- 1);
             if (board.lookupBoard(pushOnce).isEmpty() ){
                 result.add(new Game.Move(this, start, pushOnce));

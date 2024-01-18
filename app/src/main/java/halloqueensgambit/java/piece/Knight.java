@@ -39,7 +39,7 @@ public class Knight implements Piece{
             new Game.Pos(start.x() + 1, start.y() + 2),
             new Game.Pos(start.x() + 1, start.y() - 2),
             new Game.Pos(start.x() - 1, start.y() + 2),
-            new Game.Pos(start.x() - 1, start.y() + 2),
+            new Game.Pos(start.x() - 1, start.y() - 2),
             new Game.Pos(start.x() + 2, start.y() + 1),
             new Game.Pos(start.x() + 2, start.y() - 1),
             new Game.Pos(start.x() - 2, start.y() + 1),

@@ -2,8 +2,12 @@ package halloqueensgambit.java;
 
 import halloqueensgambit.java.Game;
 import halloqueensgambit.java.piece.Piece;
+
+import java.util.ArrayList;
 import java.util.TreeMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class Board {
     /*                           FIELDS AND CONSTRUCTORS                           */
@@ -15,7 +19,19 @@ public class Board {
         this.data = new TreeMap<>();
     }
 
+
     /*                               METHODS                           */
+    public ArrayList<Game.Move> legalMoves(Side side){
+        ArrayList<Game.Move> result = new ArrayList<>();
+        for (Map.Entry<Game.Pos, Piece> entry : data.entrySet()) {
+            if (entry.getValue().side() == side){
+                //TODO: might be slow?
+                //add the piece.allLegalMove(position, board) to the result
+                result.addAll(entry.getValue().allLegalMove(entry.getKey(), this));
+            }
+        }
+        return result;
+    }
     public void addToBoard(Game.Pos pos, Piece piece){
         this.data.put(pos, piece);
     }

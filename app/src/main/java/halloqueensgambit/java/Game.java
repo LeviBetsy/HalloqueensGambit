@@ -1,6 +1,8 @@
 package halloqueensgambit.java;
 import halloqueensgambit.java.piece.Piece;
 
+import java.util.ArrayList;
+
 public class Game {
     private Side side;
     private Board board;
@@ -36,6 +38,23 @@ public class Game {
 
     public static boolean inBound(Game.Pos pos){
         return (pos.x() >= 1 && pos.x() <= 8 && pos.y() >= 1 && pos.y() <= 8);
+    }
+
+    public ArrayList<Move> legalMoves(){
+        return board.legalMoves(this.side);
+    }
+
+    public ArrayList<Game> nextGames(){
+        ArrayList<Game> result = new ArrayList<>();
+        for (Move m : this.legalMoves()){
+            Board nextBoard = this.board.modifyBoard(m);
+            if (this.side == Side.BLACK){
+                result.add(new Game(Side.WHITE, nextBoard, this.turn - 1));
+            } else {
+                result.add(new Game(Side.BLACK, nextBoard, this.turn - 1));
+            }
+        }
+        return result;
     }
 
     //TODO: Stringbuilder and make this look better

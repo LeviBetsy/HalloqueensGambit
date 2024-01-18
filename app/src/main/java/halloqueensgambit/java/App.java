@@ -5,6 +5,7 @@ package halloqueensgambit.java;
 import halloqueensgambit.java.Game.*;
 import halloqueensgambit.java.piece.*;
 
+import java.lang.reflect.Array;
 import java.util.Optional;
 
 import static halloqueensgambit.java.Side.WHITE;
@@ -19,6 +20,15 @@ public class App {
     public String getGreeting() {
         return "Hello World!";
     }
+
+    public void printNextGames(Game game){
+        var lst = game.nextGames();
+        System.out.println("ALL NEXT GAME:");
+        for (var g : lst){
+            System.out.println();
+            System.out.println(g);
+        }
+    }
     public static void main(String[] args) throws IOException {
         String fileName;
         if (args.length == 0){
@@ -28,6 +38,8 @@ public class App {
         }
         Game game = scanGame(fileName);
         System.out.println(game);
+        System.out.println();
+        new App().printNextGames(game);
     }
     /*                                IO TO SCAN GAME FROM TXT FILES                               */
 
