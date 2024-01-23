@@ -1,15 +1,18 @@
 package halloqueensgambit.java;
 
 import halloqueensgambit.java.Game;
+import halloqueensgambit.java.piece.Pawn;
 import halloqueensgambit.java.piece.Piece;
+import halloqueensgambit.java.piece.Queen;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.Iterator;
 
-public class Board {
+public class Board implements Iterable<Map.Entry<Game.Pos, Piece>> {
     /*                           FIELDS AND CONSTRUCTORS                           */
     private TreeMap<Game.Pos, Piece> data;
     public Board(TreeMap<Game.Pos, Piece> data){
@@ -20,18 +23,24 @@ public class Board {
     }
 
 
+
     /*                               METHODS                           */
-    public ArrayList<Game.Move> legalMoves(Side side){
-        ArrayList<Game.Move> result = new ArrayList<>();
-        for (Map.Entry<Game.Pos, Piece> entry : data.entrySet()) {
-            if (entry.getValue().side() == side){
-                //TODO: might be slow?
-                //add the piece.allLegalMove(position, board) to the result
-                result.addAll(entry.getValue().allLegalMove(entry.getKey(), this));
-            }
-        }
-        return result;
+
+    //Any use of the Board's iterator is risking modifying the underlying tree
+    public Iterator<Map.Entry<Game.Pos, Piece>> iterator() {
+        return data.entrySet().iterator();
+        // Note that if you choose to put a parent in your node, you can use the
+        // pseudocode
+        // in the book for this. If you don't, you are allowed to use a java.util.Stack.
+        // Both
+        // approaches will need to be named so they can have a constructor that either
+        // moves the Node pointer to the first value or populates the stack.
     }
+
+    public boolean hasPiece(Piece p){
+        return this.data.containsValue(p);
+    }
+
     public void addToBoard(Game.Pos pos, Piece piece){
         this.data.put(pos, piece);
     }
@@ -54,10 +63,19 @@ public class Board {
         }
     }
     public Board modifyBoard(Game.Move move){
-        //TODO: PAWN PROMOTION
         TreeMap<Game.Pos, Piece> newData = new TreeMap<>(data);
         Piece movingPiece = newData.remove(move.start());
-        newData.put(move.end(), movingPiece);
+        if (movingPiece instanceof Pawn) {
+            if (move.p().side() == Side.WHITE && move.start().y() == 7 && move.end().y() == 8){
+                newData.put(move.end(), new Queen(Side.WHITE));
+            } else if (move.p().side() == Side.BLACK && move.start().y() == 2 && move.end().y() == 1){
+                newData.put(move.end(), new Queen(Side.BLACK));
+            } else {
+                newData.put(move.end(), movingPiece);
+            }
+        } else {
+            newData.put(move.end(), movingPiece);
+        }
         return new Board(newData);
     }
 
