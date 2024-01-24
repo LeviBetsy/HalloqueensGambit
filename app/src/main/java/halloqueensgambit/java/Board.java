@@ -19,7 +19,6 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
     }
 
 
-
     /*                               METHODS                           */
 
     //Any use of the Board's iterator is risking modifying the underlying tree
@@ -30,6 +29,7 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
     public void addToBoard(Pos pos, Piece piece){
         this.data.put(pos, piece);
     }
+
     public Optional<Piece> lookupBoard(Pos pos){
         Piece p = this.data.get(pos);
         if (p == null){
@@ -100,7 +100,7 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
         return new Board(newData);
     }
 
-    //TODO: maybe change to StringBuilder for optimization
+    //TODO: Stringbuilder
     @Override
     public String toString(){
         String result = "";

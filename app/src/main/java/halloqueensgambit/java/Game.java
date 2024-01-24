@@ -4,7 +4,6 @@ import halloqueensgambit.java.piece.Piece;
 
 import java.util.Optional;
 import java.util.ArrayList;
-import java.util.Map;
 
 public class Game {
     private Side side;
@@ -18,10 +17,9 @@ public class Game {
 
     /*                           DATATYPE                           */
     public static record Pos(int x, int y) implements Comparable<Pos> {
+        //allow comparing equals and less or larger for tree tracing
         @Override
         public int compareTo(Pos other) {
-            // Your comparison logic here
-            // For example, compare based on x first, then y
             int xComparison = Integer.compare(this.x, other.x);
             if (xComparison != 0) {
                 return xComparison;
@@ -30,7 +28,8 @@ public class Game {
         }
     }
 
-    //need to have a record of Move to check whether player's move is legal or not
+    //keeping track of the piece after the move so we can make move easier in board
+    //TODO: think of not doing that for less overhead space
     public static record Move(Piece pieceAfterMove, Pos start, Pos end){};
 
     public static record OffSet(int dx, int dy){};
@@ -42,9 +41,10 @@ public class Game {
         boolean hasWhiteKing = false;
         boolean hasBlackKing = false;
         for (var entry : this.board){
-            if (entry.getValue().side() == Side.WHITE && entry.getValue() instanceof King)
+            Piece piece = entry.getValue();
+            if (piece.side() == Side.WHITE && piece instanceof King)
                 hasWhiteKing = true;
-            if (entry.getValue().side() == Side.BLACK && entry.getValue() instanceof King)
+            if (piece.side() == Side.BLACK && piece instanceof King)
                 hasBlackKing = true;
         }
         if (hasWhiteKing && hasBlackKing){
@@ -61,27 +61,27 @@ public class Game {
 
     public ArrayList<Game> allNextGames(){
         ArrayList<Game.Move> allLegalMoves = new ArrayList<>();
-        for (Map.Entry<Game.Pos, Piece> entry : this.board) {
-            if (entry.getValue().side() == this.side){
-                allLegalMoves.addAll(entry.getValue().allLegalMove(this.board));
+        for (var entry : this.board) {
+            Piece piece = entry.getValue();
+            if (piece.side() == this.side){
+                allLegalMoves.addAll(piece.allLegalMove(this.board));
             }
         }
 
-        ArrayList<Game> result = new ArrayList<>();
+        ArrayList<Game> nextGames = new ArrayList<>();
         for (Move m : allLegalMoves){
             Board nextBoard = this.board.makeMove(m);
             if (this.side == Side.BLACK){
-                result.add(new Game(Side.WHITE, nextBoard));
+                nextGames.add(new Game(Side.WHITE, nextBoard));
             } else {
-                result.add(new Game(Side.BLACK, nextBoard));
+                nextGames.add(new Game(Side.BLACK, nextBoard));
             }
         }
-        return result;
+        return nextGames;
     }
 
 
-
-    //TODO: Stringbuilder and make this look better
+    //TODO: Stringbuilder
     @Override
     public String toString(){
         String result = "";
@@ -89,8 +89,4 @@ public class Game {
         result += this.board.toString();
         return result;
     }
-
-
-    //we do need to make a new board everytime, thus a hard copy, shitting
-
 }
