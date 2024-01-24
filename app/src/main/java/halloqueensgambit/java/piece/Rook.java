@@ -3,21 +3,22 @@ import halloqueensgambit.java.Board;
 import halloqueensgambit.java.Game;
 import halloqueensgambit.java.Side;
 import java.util.stream.Collectors;
+import halloqueensgambit.java.Game.Pos;
 
 import java.util.ArrayList;
 
 public class Rook implements Piece {
     private Side side;
-    private Game.Pos pos;
+    private Pos pos;
     public boolean hasMoved;
-    public Rook(Side side, Game.Pos pos, boolean hasMoved){
+    public Rook(Side side, Pos pos, boolean hasMoved){
         this.side = side;
         this.pos = pos;
         this.hasMoved = hasMoved;
     }
 
     @Override
-    public Game.Pos pos() {return this.pos;}
+    public Pos pos() {return this.pos;}
 
     @Override
     public Side side() {
@@ -39,7 +40,7 @@ public class Rook implements Piece {
 
     @Override
     public ArrayList<Game.Move> allLegalMove(Board board){
-        ArrayList<Game.Pos> legalPos = new ArrayList<>();
+        ArrayList<Pos> legalPos = new ArrayList<>();
         Game.OffSet[] offsets = {
                 new Game.OffSet(0, 1),
                 new Game.OffSet(0, -1),

@@ -2,6 +2,7 @@ package halloqueensgambit.java.piece;
 
 import halloqueensgambit.java.Board;
 import halloqueensgambit.java.Game;
+import halloqueensgambit.java.Game.Pos;
 import halloqueensgambit.java.Side;
 
 import java.util.ArrayList;
@@ -9,14 +10,14 @@ import java.util.stream.Collectors;
 
 public class Queen implements Piece{
     private Side side;
-    private Game.Pos pos;
-    public Queen(Side side, Game.Pos pos){
+    private Pos pos;
+    public Queen(Side side, Pos pos){
         this.side = side;
         this.pos = pos;
     }
 
     @Override
-    public Game.Pos pos(){
+    public Pos pos(){
         return this.pos;
     }
 
@@ -40,7 +41,7 @@ public class Queen implements Piece{
 
     @Override
     public ArrayList<Game.Move> allLegalMove(Board board){
-        ArrayList<Game.Pos> legalPos = new ArrayList<>();
+        ArrayList<Pos> legalPos = new ArrayList<>();
         Game.OffSet[] offsets = {
             new Game.OffSet(1, 1),
             new Game.OffSet(1, -1),

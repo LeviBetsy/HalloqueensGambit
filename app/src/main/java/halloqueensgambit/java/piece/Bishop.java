@@ -2,6 +2,7 @@ package halloqueensgambit.java.piece;
 
 import halloqueensgambit.java.Board;
 import halloqueensgambit.java.Game;
+import halloqueensgambit.java.Game.Pos;
 import halloqueensgambit.java.Side;
 
 import java.util.ArrayList;
@@ -9,14 +10,14 @@ import java.util.stream.Collectors;
 
 public class Bishop implements Piece{
     private Side side;
-    private Game.Pos pos;
-    public Bishop(Side side, Game.Pos pos){
+    private Pos pos;
+    public Bishop(Side side, Pos pos){
         this.side = side;
         this.pos = pos;
     }
 
     @Override
-    public Game.Pos pos() {return this.pos;}
+    public Pos pos() {return this.pos;}
     @Override
     public Side side() {
         return this.side;
@@ -37,7 +38,7 @@ public class Bishop implements Piece{
 
     @Override
     public ArrayList<Game.Move> allLegalMove(Board board){
-        ArrayList<Game.Pos> legalPos = new ArrayList<>();
+        ArrayList<Pos> legalPos = new ArrayList<>();
         Game.OffSet[] offsets = {
                 new Game.OffSet(1, 1),
                 new Game.OffSet(1, -1),
@@ -45,13 +46,15 @@ public class Bishop implements Piece{
                 new Game.OffSet(-1, -1)
         };
 
+        //GENERATING ALL LEGAL POSITIONS
         for (Game.OffSet offset : offsets) {
             legalPos = RCP.RecurCheckPath(legalPos, board, this.side, this.pos, offset);
         }
 
-        ArrayList<Game.Move> result = legalPos.stream()
+        //DERIVING ALL LEGAL MOVES FROM THOSE POSITION
+        ArrayList<Game.Move> legalMoves = legalPos.stream()
                 .map(end -> new Game.Move(new Bishop(this.side, end), this.pos, end)) // Modify each element as needed
                 .collect(Collectors.toCollection(ArrayList::new));
-        return result;
+        return legalMoves;
     }
 }

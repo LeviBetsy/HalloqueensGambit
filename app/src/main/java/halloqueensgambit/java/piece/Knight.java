@@ -2,6 +2,7 @@ package halloqueensgambit.java.piece;
 
 import halloqueensgambit.java.Board;
 import halloqueensgambit.java.Game;
+import halloqueensgambit.java.Game.Pos;
 import halloqueensgambit.java.Side;
 
 import java.util.ArrayList;
@@ -9,14 +10,14 @@ import java.util.stream.Collectors;
 
 public class Knight implements Piece{
     private Side side;
-    private Game.Pos pos;
-    public Knight(Side side, Game.Pos pos){
+    private Pos pos;
+    public Knight(Side side, Pos pos){
         this.side = side;
         this.pos = pos;
     }
     
     @Override
-    public Game.Pos pos() { return this.pos;}
+    public Pos pos() { return this.pos;}
 
     @Override
     public Side side() {
@@ -38,20 +39,20 @@ public class Knight implements Piece{
 
     @Override
     public ArrayList<Game.Move> allLegalMove(Board board){
-        ArrayList<Game.Pos> legalPos = new ArrayList<>();
+        ArrayList<Pos> legalPos = new ArrayList<>();
 
-        Game.Pos[] nextPos = {
-            new Game.Pos(this.pos.x() + 1, this.pos.y() + 2),
-            new Game.Pos(this.pos.x() + 1, this.pos.y() - 2),
-            new Game.Pos(this.pos.x() - 1, this.pos.y() + 2),
-            new Game.Pos(this.pos.x() - 1, this.pos.y() - 2),
-            new Game.Pos(this.pos.x() + 2, this.pos.y() + 1),
-            new Game.Pos(this.pos.x() + 2, this.pos.y() - 1),
-            new Game.Pos(this.pos.x() - 2, this.pos.y() + 1),
-            new Game.Pos(this.pos.x() - 2, this.pos.y() - 1)
+        Pos[] nextPos = {
+            new Pos(this.pos.x() + 1, this.pos.y() + 2),
+            new Pos(this.pos.x() + 1, this.pos.y() - 2),
+            new Pos(this.pos.x() - 1, this.pos.y() + 2),
+            new Pos(this.pos.x() - 1, this.pos.y() - 2),
+            new Pos(this.pos.x() + 2, this.pos.y() + 1),
+            new Pos(this.pos.x() + 2, this.pos.y() - 1),
+            new Pos(this.pos.x() - 2, this.pos.y() + 1),
+            new Pos(this.pos.x() - 2, this.pos.y() - 1)
         };
 
-        for (Game.Pos p : nextPos) {
+        for (Pos p : nextPos) {
             if (Game.inBound(p) && board.notAlly(p, this.side)){
                 legalPos.add(p);
             }

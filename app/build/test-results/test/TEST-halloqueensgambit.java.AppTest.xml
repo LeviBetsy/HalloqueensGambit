@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<<<<<<< HEAD
 <testsuite name="halloqueensgambit.java.AppTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2024-01-24T04:29:52" hostname="Aidens-MacBook-Air.local" time="0.04">
   <properties/>
   <testcase name="appHasAGreeting()" classname="halloqueensgambit.java.AppTest" time="0.04"/>
+=======
+<testsuite name="halloqueensgambit.java.AppTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2024-01-24T14:19:19" hostname="apples-mbp-2.trinity.local" time="0.007">
+  <properties/>
+  <testcase name="appHasAGreeting()" classname="halloqueensgambit.java.AppTest" time="0.007"/>
+>>>>>>> solver
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
