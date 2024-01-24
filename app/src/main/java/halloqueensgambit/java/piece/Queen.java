@@ -10,17 +10,10 @@ import java.util.stream.Collectors;
 
 public class Queen implements Piece{
     private Side side;
-    private Pos pos;
-    public Queen(Side side, Pos pos){
+    public Queen(Side side){
         this.side = side;
-        this.pos = pos;
     }
-
-    @Override
-    public Pos pos(){
-        return this.pos;
-    }
-
+    
     @Override
     public Side side() {
         return this.side;
@@ -40,7 +33,7 @@ public class Queen implements Piece{
     }
 
     @Override
-    public ArrayList<Game.Move> allLegalMove(Board board){
+    public ArrayList<Game.Move> allLegalMove(Pos pos, Board board){
         ArrayList<Pos> legalPos = new ArrayList<>();
         Game.OffSet[] offsets = {
             new Game.OffSet(1, 1),
@@ -54,11 +47,11 @@ public class Queen implements Piece{
         };
 
         for (Game.OffSet offset : offsets) {
-            legalPos = RCP.RecurCheckPath(legalPos, board, this.side, this.pos, offset);
+            legalPos = RCP.RecurCheckPath(legalPos, board, this.side, pos, offset);
         }
 
         ArrayList<Game.Move> result = legalPos.stream()
-                .map(end -> new Game.Move(new Queen(this.side, end), this.pos, end)) // Modify each element as needed
+                .map(end -> new Game.Move(pos, end)) // Modify each element as needed
                 .collect(Collectors.toCollection(ArrayList::new));
         return result;
     }

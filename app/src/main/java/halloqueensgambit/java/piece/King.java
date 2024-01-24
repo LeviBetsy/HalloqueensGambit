@@ -9,18 +9,13 @@ import java.util.stream.Collectors;
 import halloqueensgambit.java.Game.Pos;
 
 public class King implements Piece{
-
     private Side side;
-    private Pos pos;
-    private boolean hasMoved;
-    public King(Side side, Pos pos, boolean hasMoved){
+    public boolean hasMoved;
+    public King(Side side, boolean hasMoved){
         this.side = side;
-        this.pos = pos;
         this.hasMoved = hasMoved;
     }
 
-    @Override
-    public Pos pos() {return  this.pos;}
     @Override
     public Side side() {
         return this.side;
@@ -40,17 +35,17 @@ public class King implements Piece{
     }
 
     @Override
-    public ArrayList<Game.Move> allLegalMove(Board board){
+    public ArrayList<Game.Move> allLegalMove(Pos pos, Board board){
         ArrayList<Pos> legalPos = new ArrayList<>();
         Pos[] nextPos = {
-                new Pos(this.pos.x() + 1, this.pos.y() + 1),
-                new Pos(this.pos.x() + 1, this.pos.y()),
-                new Pos(this.pos.x() + 1, this.pos.y() - 1),
-                new Pos(this.pos.x(), this.pos.y() + 1),
-                new Pos(this.pos.x(), this.pos.y() - 1),
-                new Pos(this.pos.x() - 1, this.pos.y() + 1),
-                new Pos(this.pos.x() - 1, this.pos.y()),
-                new Pos(this.pos.x() - 1, this.pos.y() - 1)
+                new Pos(pos.x() + 1, pos.y() + 1),
+                new Pos(pos.x() + 1, pos.y()),
+                new Pos(pos.x() + 1, pos.y() - 1),
+                new Pos(pos.x(), pos.y() + 1),
+                new Pos(pos.x(), pos.y() - 1),
+                new Pos(pos.x() - 1, pos.y() + 1),
+                new Pos(pos.x() - 1, pos.y()),
+                new Pos(pos.x() - 1, pos.y() - 1)
         };
 
         for (Pos p : nextPos) {
@@ -60,7 +55,7 @@ public class King implements Piece{
         }
 
         ArrayList<Game.Move> result = legalPos.stream()
-                .map(end -> new Game.Move(new King(this.side, end, true), this.pos, end)) // Modify each element as needed
+                .map(end -> new Game.Move(pos, end)) // Modify each element as needed
                 .collect(Collectors.toCollection(ArrayList::new));
 
         //CASTLING
@@ -71,13 +66,13 @@ public class King implements Piece{
                         board.lookupBoard(new Pos(2, 1)).isEmpty()
                         && board.lookupBoard(new Pos(3, 1)).isEmpty()
                         && board.lookupBoard(new Pos(4, 1)).isEmpty()) {
-                    result.add(new Game.Move(new King(this.side, new Pos(3, 1), true), this.pos, new Pos(3, 1)));
+                    result.add(new Game.Move(pos, new Pos(3, 1)));
                 }
                 var kingRook = board.lookupBoard(new Pos(8, 1)).get();
                 if (kingRook instanceof Rook && queenRook.side() == Side.WHITE && !((Rook) kingRook).hasMoved &&
                         board.lookupBoard(new Pos(6, 1)).isEmpty()
                         && board.lookupBoard(new Pos(7, 1)).isEmpty()) {
-                    result.add(new Game.Move(new King(this.side, new Pos(7, 1), true), this.pos, new Pos(7, 1)));
+                    result.add(new Game.Move(pos, new Pos(7, 1)));
                 }
             } else {
                 var queenRook = board.lookupBoard(new Pos(1, 8)).get();
@@ -85,17 +80,16 @@ public class King implements Piece{
                         board.lookupBoard(new Pos(2, 8)).isEmpty()
                         && board.lookupBoard(new Pos(3, 8)).isEmpty()
                         && board.lookupBoard(new Pos(4, 8)).isEmpty()) {
-                    result.add(new Game.Move(new King(this.side, new Pos(3, 8), true), this.pos, new Pos(3, 8)));
+                    result.add(new Game.Move(pos, new Pos(3, 8)));
                 }
                 var kingRook = board.lookupBoard(new Pos(8, 8)).get();
                 if (kingRook instanceof Rook && queenRook.side() == Side.BLACK && !((Rook) kingRook).hasMoved &&
                         board.lookupBoard(new Pos(6, 8)).isEmpty()
                         && board.lookupBoard(new Pos(7, 8)).isEmpty()) {
-                    result.add(new Game.Move(new King(this.side, new Pos(7, 8), true), this.pos, new Pos(7, 8)));
+                    result.add(new Game.Move(pos, new Pos(7, 8)));
                 }
             }
         }
-
         return result;
     }
 }
