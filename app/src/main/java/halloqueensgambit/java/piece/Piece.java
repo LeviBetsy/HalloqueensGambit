@@ -14,6 +14,7 @@ public interface Piece {
     int value();
     ArrayList<Game.Move> allLegalMove(Board board);
 
+    
 
 }
 
