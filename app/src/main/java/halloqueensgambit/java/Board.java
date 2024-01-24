@@ -29,12 +29,6 @@ public class Board implements Iterable<Map.Entry<Game.Pos, Piece>> {
     //Any use of the Board's iterator is risking modifying the underlying tree
     public Iterator<Map.Entry<Game.Pos, Piece>> iterator() {
         return data.entrySet().iterator();
-        // Note that if you choose to put a parent in your node, you can use the
-        // pseudocode
-        // in the book for this. If you don't, you are allowed to use a java.util.Stack.
-        // Both
-        // approaches will need to be named so they can have a constructor that either
-        // moves the Node pointer to the first value or populates the stack.
     }
 
     public boolean hasPiece(Piece p){
@@ -62,14 +56,14 @@ public class Board implements Iterable<Map.Entry<Game.Pos, Piece>> {
             return p.side() != side;
         }
     }
-    public Board modifyBoard(Game.Move move){
+    public Board makeMove(Game.Move move){
         TreeMap<Game.Pos, Piece> newData = new TreeMap<>(data);
         Piece movingPiece = newData.remove(move.start());
         if (movingPiece instanceof Pawn) {
             if (move.p().side() == Side.WHITE && move.start().y() == 7 && move.end().y() == 8){
-                newData.put(move.end(), new Queen(Side.WHITE));
+                newData.put(move.end(), new Queen(Side.WHITE, move.end()));
             } else if (move.p().side() == Side.BLACK && move.start().y() == 2 && move.end().y() == 1){
-                newData.put(move.end(), new Queen(Side.BLACK));
+                newData.put(move.end(), new Queen(Side.BLACK, move.end()));
             } else {
                 newData.put(move.end(), movingPiece);
             }

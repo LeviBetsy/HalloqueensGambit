@@ -10,11 +10,9 @@ import java.util.Map;
 public class Game {
     private Side side;
     private Board board;
-    private int turn;
-    public Game(Side side, Board board, int turn){
+    public Game(Side side, Board board){
         this.side = side;
         this.board = board;
-        this.turn = turn;
     }
 
 
@@ -44,64 +42,32 @@ public class Game {
         return (pos.x() >= 1 && pos.x() <= 8 && pos.y() >= 1 && pos.y() <= 8);
     }
 
-    public boolean kingTaken(){
-        return (this.board.hasPiece(new King(Side.WHITE)) && this.board.hasPiece(new King(Side.BLACK)));
-    }
-
-
-
-    public Optional<Winner> whoHasWon(){
-        if (!this.board.hasPiece(new King(Side.WHITE))){
-            return Optional.of(Winner.BLACK);
-        } else if (!this.board.hasPiece(new King(Side.BLACK))){
-            return Optional.of(Winner.WHITE);
-        } else if (this.turn == 0){
-            //what is a stalemate?, king is not checked, but there is nowhere to go.
-            //a game state is not won, but all next game states are loss. NO
-            //so if there's always a move, but that move.
-
-            // a legal move means moving and the next one is not EXHAUSTIVE won.
-            // a stalemate means no legal move
-            // a RIGHTFUL WIN is stalemate and next one, same turn is EXHAUSTIVE won. THAT"S GOING TO BE SLOW. VERY SLOW.
-            // one more layer of states. Maybe that is the only way,
-            //TODO: stalemate check so they avoid a stalemate, aka a TIE, or push for it
-            //you don't have to think about legalMove that expose king because the next move would be a take
-            return Optional.of(Winner.TIE);
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    public ArrayList<Move> legalMoves(){
-        ArrayList<Game.Move> result = new ArrayList<>();
+    public ArrayList<Game> allNextGames(){
+        ArrayList<Game.Move> allLegalMoves = new ArrayList<>();
         for (Map.Entry<Game.Pos, Piece> entry : this.board) {
             if (entry.getValue().side() == this.side){
-                //TODO: might be slow?
-                //add the piece.allLegalMove(position, board) to the result
-                result.addAll(entry.getValue().allLegalMove(entry.getKey(), this.board));
+                allLegalMoves.addAll(entry.getValue().allLegalMove(this.board));
+            }
+        }
+
+        ArrayList<Game> result = new ArrayList<>();
+        for (Move m : allLegalMoves){
+            Board nextBoard = this.board.makeMove(m);
+            if (this.side == Side.BLACK){
+                result.add(new Game(Side.WHITE, nextBoard));
+            } else {
+                result.add(new Game(Side.BLACK, nextBoard));
             }
         }
         return result;
     }
 
-    public ArrayList<Game> nextGames(){
-        ArrayList<Game> result = new ArrayList<>();
-        for (Move m : this.legalMoves()){
-            Board nextBoard = this.board.modifyBoard(m);
-            if (this.side == Side.BLACK){
-                result.add(new Game(Side.WHITE, nextBoard, this.turn - 1));
-            } else {
-                result.add(new Game(Side.BLACK, nextBoard, this.turn - 1));
-            }
-        }
-        return result;
-    }
+
 
     //TODO: Stringbuilder and make this look better
     @Override
     public String toString(){
         String result = "";
-        result += "Turn(s) remaining: " + Integer.toString(this.turn) + "\n";
         result += "Current player: " + this.side.toString() + "\n";
         result += this.board.toString();
         return result;

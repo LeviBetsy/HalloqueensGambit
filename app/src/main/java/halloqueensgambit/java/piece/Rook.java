@@ -8,9 +8,16 @@ import java.util.ArrayList;
 
 public class Rook implements Piece {
     private Side side;
-    public Rook(Side side){
+    private Game.Pos pos;
+    private boolean hasMoved;
+    public Rook(Side side, Game.Pos pos, boolean hasMoved){
         this.side = side;
+        this.pos = pos;
+        this.hasMoved = hasMoved;
     }
+
+    @Override
+    public Game.Pos pos() {return this.pos;}
 
     @Override
     public Side side() {
@@ -31,7 +38,7 @@ public class Rook implements Piece {
     }
 
     @Override
-    public ArrayList<Game.Move> allLegalMove(Game.Pos start, Board board){
+    public ArrayList<Game.Move> allLegalMove(Board board){
         ArrayList<Game.Pos> legalPos = new ArrayList<>();
         Game.OffSet[] offsets = {
                 new Game.OffSet(0, 1),
@@ -41,11 +48,11 @@ public class Rook implements Piece {
         };
 
         for (Game.OffSet offset : offsets) {
-            legalPos = RCP.RecurCheckPath(legalPos, board, this.side, start, offset);
+            legalPos = RCP.RecurCheckPath(legalPos, board, this.side, this.pos, offset);
         }
 
         ArrayList<Game.Move> result = legalPos.stream()
-                .map(pos -> new Game.Move(this, start, pos)) // Modify each element as needed
+                .map(end -> new Game.Move(new Rook(this.side, end, true), this.pos, end)) // Modify each element as needed
                 .collect(Collectors.toCollection(ArrayList::new));
         return result;
     }

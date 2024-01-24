@@ -10,10 +10,16 @@ import java.util.stream.Collectors;
 public class King implements Piece{
 
     private Side side;
-    public King(Side side){
+    private Game.Pos pos;
+    private boolean hasMoved;
+    public King(Side side, Game.Pos pos, boolean hasMoved){
         this.side = side;
+        this.pos = pos;
+        this.hasMoved = hasMoved;
     }
 
+    @Override
+    public Game.Pos pos() {return  this.pos;}
     @Override
     public Side side() {
         return this.side;
@@ -33,17 +39,17 @@ public class King implements Piece{
     }
 
     @Override
-    public ArrayList<Game.Move> allLegalMove(Game.Pos start, Board board){
+    public ArrayList<Game.Move> allLegalMove(Board board){
         ArrayList<Game.Pos> legalPos = new ArrayList<>();
         Game.Pos[] nextPos = {
-                new Game.Pos(start.x() + 1, start.y() + 1),
-                new Game.Pos(start.x() + 1, start.y()),
-                new Game.Pos(start.x() + 1, start.y() - 1),
-                new Game.Pos(start.x(), start.y() + 1),
-                new Game.Pos(start.x(), start.y() - 1),
-                new Game.Pos(start.x() - 1, start.y() + 1),
-                new Game.Pos(start.x() - 1, start.y()),
-                new Game.Pos(start.x() - 1, start.y() - 1)
+                new Game.Pos(this.pos.x() + 1, this.pos.y() + 1),
+                new Game.Pos(this.pos.x() + 1, this.pos.y()),
+                new Game.Pos(this.pos.x() + 1, this.pos.y() - 1),
+                new Game.Pos(this.pos.x(), this.pos.y() + 1),
+                new Game.Pos(this.pos.x(), this.pos.y() - 1),
+                new Game.Pos(this.pos.x() - 1, this.pos.y() + 1),
+                new Game.Pos(this.pos.x() - 1, this.pos.y()),
+                new Game.Pos(this.pos.x() - 1, this.pos.y() - 1)
         };
 
         for (Game.Pos p : nextPos) {
@@ -53,7 +59,7 @@ public class King implements Piece{
         }
 
         ArrayList<Game.Move> result = legalPos.stream()
-                .map(pos -> new Game.Move(this, start, pos)) // Modify each element as needed
+                .map(end -> new Game.Move(new King(this.side, end, true), this.pos, end)) // Modify each element as needed
                 .collect(Collectors.toCollection(ArrayList::new));
         return result;
     }

@@ -8,9 +8,11 @@ public interface Piece {
     //but if we don't keep track of x, y for each piece internally, when we want to find all legal moves
     //in a game state, we loop through all the pieces that are a color, then we pass their position into themselves
     //I suppose it isn't that bad. There's always a way to make something different. Let's just go with it
+
+    Game.Pos pos();
     Side side();
     int value();
-    ArrayList<Game.Move> allLegalMove(Game.Pos start, Board board);
+    ArrayList<Game.Move> allLegalMove(Board board);
 
 
 }

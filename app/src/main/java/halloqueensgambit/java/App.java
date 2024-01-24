@@ -5,7 +5,6 @@ package halloqueensgambit.java;
 import halloqueensgambit.java.Game.*;
 import halloqueensgambit.java.piece.*;
 
-import java.lang.reflect.Array;
 import java.util.Optional;
 
 import static halloqueensgambit.java.Side.WHITE;
@@ -17,12 +16,8 @@ import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
-
     public void printNextGames(Game game){
-        var lst = game.nextGames();
+        var lst = game.allNextGames();
         System.out.println("ALL NEXT GAME:");
         for (var g : lst){
             System.out.println();
@@ -50,7 +45,6 @@ public class App {
         Path filePath = Paths.get(currentDirectory, "src/main/java/halloqueensgambit/java/games", fileName);
         Scanner scanner = new Scanner(filePath);
 
-        int turn = Integer.parseInt(scanner.nextLine());
         Side side = (scanner.nextLine().equals("B")) ? BLACK : WHITE;
         Board b = new Board();
 
@@ -60,30 +54,30 @@ public class App {
             //splitting a row into individual squares
             String[] squares = row.split("\\s+");
             for (int x = 1; x <= 8; x++){
-                Optional<Piece> currentPiece = scanPiece(squares[x - 1]);
+                Optional<Piece> currentPiece = scanPiece(squares[x - 1], new Pos(x,y));
                 //if scan Piece does not return an Optional value
                 if (currentPiece.isPresent()){
                     b.addToBoard(new Pos(x,y), currentPiece.get());
                 }
             }
         }
-        return new Game(side, b, turn);
+        return new Game(side, b);
     }
 
-    private static Optional<Piece> scanPiece(String c){
+    private static Optional<Piece> scanPiece(String c, Pos pos){
         return switch (c) {
-            case "R" -> Optional.of(new Rook(WHITE));
-            case "r" -> Optional.of(new Rook(BLACK));
-            case "N" -> Optional.of(new Knight(WHITE));
-            case "n" -> Optional.of(new Knight(BLACK));
-            case "B" -> Optional.of(new Bishop(WHITE));
-            case "b" -> Optional.of(new Bishop(BLACK));
-            case "K" -> Optional.of(new King(WHITE));
-            case "k" -> Optional.of(new King(BLACK));
-            case "Q" -> Optional.of(new Queen(WHITE));
-            case "q" -> Optional.of(new Queen(BLACK));
-            case "P" -> Optional.of(new Pawn(WHITE));
-            case "p" -> Optional.of(new Pawn(BLACK));
+            case "R" -> Optional.of(new Rook(WHITE, pos,false));
+            case "r" -> Optional.of(new Rook(BLACK, pos,false));
+            case "N" -> Optional.of(new Knight(WHITE, pos));
+            case "n" -> Optional.of(new Knight(BLACK, pos));
+            case "B" -> Optional.of(new Bishop(WHITE, pos));
+            case "b" -> Optional.of(new Bishop(BLACK, pos));
+            case "K" -> Optional.of(new King(WHITE, pos,false));
+            case "k" -> Optional.of(new King(BLACK, pos, false));
+            case "Q" -> Optional.of(new Queen(WHITE, pos));
+            case "q" -> Optional.of(new Queen(BLACK, pos));
+            case "P" -> Optional.of(new Pawn(WHITE, pos));
+            case "p" -> Optional.of(new Pawn(BLACK, pos));
             default -> Optional.empty();
         };
     }

@@ -9,9 +9,14 @@ import java.util.stream.Collectors;
 
 public class Knight implements Piece{
     private Side side;
-    public Knight(Side side){
+    private Game.Pos pos;
+    public Knight(Side side, Game.Pos pos){
         this.side = side;
+        this.pos = pos;
     }
+    
+    @Override
+    public Game.Pos pos() { return this.pos;}
 
     @Override
     public Side side() {
@@ -32,18 +37,18 @@ public class Knight implements Piece{
     }
 
     @Override
-    public ArrayList<Game.Move> allLegalMove(Game.Pos start, Board board){
+    public ArrayList<Game.Move> allLegalMove(Board board){
         ArrayList<Game.Pos> legalPos = new ArrayList<>();
 
         Game.Pos[] nextPos = {
-            new Game.Pos(start.x() + 1, start.y() + 2),
-            new Game.Pos(start.x() + 1, start.y() - 2),
-            new Game.Pos(start.x() - 1, start.y() + 2),
-            new Game.Pos(start.x() - 1, start.y() - 2),
-            new Game.Pos(start.x() + 2, start.y() + 1),
-            new Game.Pos(start.x() + 2, start.y() - 1),
-            new Game.Pos(start.x() - 2, start.y() + 1),
-            new Game.Pos(start.x() - 2, start.y() - 1)
+            new Game.Pos(this.pos.x() + 1, this.pos.y() + 2),
+            new Game.Pos(this.pos.x() + 1, this.pos.y() - 2),
+            new Game.Pos(this.pos.x() - 1, this.pos.y() + 2),
+            new Game.Pos(this.pos.x() - 1, this.pos.y() - 2),
+            new Game.Pos(this.pos.x() + 2, this.pos.y() + 1),
+            new Game.Pos(this.pos.x() + 2, this.pos.y() - 1),
+            new Game.Pos(this.pos.x() - 2, this.pos.y() + 1),
+            new Game.Pos(this.pos.x() - 2, this.pos.y() - 1)
         };
 
         for (Game.Pos p : nextPos) {
@@ -53,7 +58,7 @@ public class Knight implements Piece{
         }
 
         ArrayList<Game.Move> result = legalPos.stream()
-                .map(pos -> new Game.Move(this, start, pos)) // Modify each element as needed
+                .map(end -> new Game.Move(new Knight(this.side, end), this.pos, end)) // Modify each element as needed
                 .collect(Collectors.toCollection(ArrayList::new));
         return result;
     }
