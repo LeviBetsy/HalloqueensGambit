@@ -1,19 +1,13 @@
 package halloqueensgambit.java;
 import halloqueensgambit.java.piece.*;
 
-<<<<<<< HEAD
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Scanner;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-=======
-import java.util.Optional;
-import java.util.ArrayList;
->>>>>>> solver
 
 public class Game {
     private Side side;
@@ -119,16 +113,11 @@ public class Game {
         return nextGames;
     }
 
-<<<<<<< HEAD
     public int evaluateBoard(){
         return board.evaluate();
     }
 
-    //TODO: Stringbuilder and make this look better
-=======
-
     //TODO: Stringbuilder
->>>>>>> solver
     @Override
     public String toString(){
         String result = "";
@@ -136,7 +125,6 @@ public class Game {
         result += this.board.toString();
         return result;
     }
-<<<<<<< HEAD
 
     // TODO: consider where this should really go
     private static Optional<Piece> scanPiece(String c, Pos pos){
@@ -158,6 +146,4 @@ public class Game {
     }
 
 
-=======
->>>>>>> solver
 }
