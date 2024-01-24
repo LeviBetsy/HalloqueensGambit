@@ -47,54 +47,61 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
             return p.side() != side;
         }
     }
+
     public Board makeMove(Game.Move move){
         TreeMap<Pos, Piece> newData = new TreeMap<>(data);
-        newData.remove(move.start());
+        Piece movingPiece = newData.remove(move.start());
+        if (movingPiece instanceof King){
+            ((King) movingPiece).hasMoved = true;
+        } else if (movingPiece instanceof Rook){
+            ((Rook) movingPiece).hasMoved = true;
+        }
+
         //PROMOTION
-        if (move.pieceAfterMove() instanceof Pawn) {
-            if (move.pieceAfterMove().side() == Side.WHITE && move.start().y() == 7 && move.end().y() == 8){
-                newData.put(move.end(), new Queen(Side.WHITE, move.end()));
-            } else if (move.pieceAfterMove().side() == Side.BLACK && move.start().y() == 2 && move.end().y() == 1){
-                newData.put(move.end(), new Queen(Side.BLACK, move.end()));
+        if (movingPiece instanceof Pawn) {
+            if (movingPiece.side() == Side.WHITE && move.start().y() == 7 && move.end().y() == 8){
+                newData.put(move.end(), new Queen(Side.WHITE));
+            } else if (movingPiece.side() == Side.BLACK && move.start().y() == 2 && move.end().y() == 1){
+                newData.put(move.end(), new Queen(Side.BLACK));
             } else {
-                newData.put(move.end(), move.pieceAfterMove());
+                newData.put(move.end(), movingPiece);
             }
         } 
         //CASTLING
-        else if (move.pieceAfterMove() instanceof King) {
+        else if (movingPiece instanceof King) {
             //CASTLING WHITE QUEEN SIDE
-            if (move.pieceAfterMove().side() == Side.WHITE && move.start().equals(new Pos(5,1) )
+            if (movingPiece.side() == Side.WHITE && move.start().equals(new Pos(5,1) )
                     && move.end().equals(new Pos(3,1))){
                 //MOVING THE ROOK
                 newData.remove(new Pos(1,1));
-                newData.put(new Pos(4,1), new Rook(Side.WHITE, new Pos(4,1), true));
-                newData.put(move.end(), move.pieceAfterMove());
+                newData.put(new Pos(4,1), new Rook(Side.WHITE, true));
+                newData.put(move.end(), movingPiece);
             //CASTLING WHITE KING SIDE
-            } else if (move.pieceAfterMove().side() == Side.WHITE && move.start().equals(new Pos(5,1) )
+            } else if (movingPiece.side() == Side.WHITE && move.start().equals(new Pos(5,1) )
                     && move.end().equals(new Pos(7,1))){
                 //MOVING THE ROOK
                 newData.remove(new Pos(8,1));
-                newData.put(new Pos(6,1), new Rook(Side.WHITE, new Pos(6,1), true));
-                newData.put(move.end(), move.pieceAfterMove());
+                newData.put(new Pos(6,1), new Rook(Side.WHITE, true));
+                newData.put(move.end(), movingPiece);
             //CASTLING BLACK QUEEN SIDE
-            } else if (move.pieceAfterMove().side() == Side.BLACK && move.start().equals(new Pos(5,8) )
+            } else if (movingPiece.side() == Side.BLACK && move.start().equals(new Pos(5,8) )
                     && move.end().equals(new Pos(3,8))){
                 //MOVING THE ROOK
                 newData.remove(new Pos(1,8));
-                newData.put(new Pos(4,8), new Rook(Side.BLACK, new Pos(4,8), true));
-                newData.put(move.end(), move.pieceAfterMove());
+                newData.put(new Pos(4,8), new Rook(Side.BLACK, true));
+                newData.put(move.end(), movingPiece);
             //CASTLING BLACK KING SIDE
-            } else if (move.pieceAfterMove().side() == Side.BLACK && move.start().equals(new Pos(5,8) )
+            } else if (movingPiece.side() == Side.BLACK && move.start().equals(new Pos(5,8) )
                     && move.end().equals(new Pos(7,8))) {
                 //MOVING THE ROOK
                 newData.remove(new Pos(8, 8));
-                newData.put(new Pos(6, 8), new Rook(Side.BLACK, new Pos(6, 8), true));
-                newData.put(move.end(), move.pieceAfterMove());
+                newData.put(new Pos(6, 8), new Rook(Side.BLACK, true));
+                newData.put(move.end(), movingPiece);
             } else {
-                newData.put(move.end(), move.pieceAfterMove());
+                newData.put(move.end(), movingPiece);
             }
         } else {
-            newData.put(move.end(), move.pieceAfterMove());
+            newData.put(move.end(), movingPiece);
         }
         return new Board(newData);
     }

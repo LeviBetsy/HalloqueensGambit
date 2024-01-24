@@ -18,6 +18,8 @@ public class Game {
         this.board = board;
     }
 
+    //constructor for creating game from file name
+    //file must be inside of games folder
     public Game(String fileName){
         try{
             // Resolve the file path
@@ -64,7 +66,7 @@ public class Game {
 
     //keeping track of the piece after the move so we can make move easier in board
     //TODO: think of not doing that for less overhead space
-    public static record Move(Piece pieceAfterMove, Pos start, Pos end){};
+    public static record Move(Pos start, Pos end){};
     public static record OffSet(int dx, int dy){};
 
     /*                                METHODS                                */
@@ -93,11 +95,12 @@ public class Game {
     }
 
     public ArrayList<Game> allNextGames(){
-        ArrayList<Game.Move> allLegalMoves = new ArrayList<>();
+        ArrayList<Move> allLegalMoves = new ArrayList<>();
         for (var entry : this.board) {
             Piece piece = entry.getValue();
+            Pos pos = entry.getKey();
             if (piece.side() == this.side){
-                allLegalMoves.addAll(piece.allLegalMove(this.board));
+                allLegalMoves.addAll(piece.allLegalMove(pos, this.board));
             }
         }
 
@@ -129,21 +132,19 @@ public class Game {
     // TODO: consider where this should really go
     private static Optional<Piece> scanPiece(String c, Pos pos){
         return switch (c) {
-            case "R" -> Optional.of(new Rook(Side.WHITE, pos,false));
-            case "r" -> Optional.of(new Rook(Side.BLACK, pos,false));
-            case "N" -> Optional.of(new Knight(Side.WHITE, pos));
-            case "n" -> Optional.of(new Knight(Side.BLACK, pos));
-            case "B" -> Optional.of(new Bishop(Side.WHITE, pos));
-            case "b" -> Optional.of(new Bishop(Side.BLACK, pos));
-            case "K" -> Optional.of(new King(Side.WHITE, pos,false));
-            case "k" -> Optional.of(new King(Side.BLACK, pos, false));
-            case "Q" -> Optional.of(new Queen(Side.WHITE, pos));
-            case "q" -> Optional.of(new Queen(Side.BLACK, pos));
-            case "P" -> Optional.of(new Pawn(Side.WHITE, pos));
-            case "p" -> Optional.of(new Pawn(Side.BLACK, pos));
+            case "R" -> Optional.of(new Rook(Side.WHITE,false));
+            case "r" -> Optional.of(new Rook(Side.BLACK,false));
+            case "N" -> Optional.of(new Knight(Side.WHITE));
+            case "n" -> Optional.of(new Knight(Side.BLACK));
+            case "B" -> Optional.of(new Bishop(Side.WHITE));
+            case "b" -> Optional.of(new Bishop(Side.BLACK));
+            case "K" -> Optional.of(new King(Side.WHITE,false));
+            case "k" -> Optional.of(new King(Side.BLACK, false));
+            case "Q" -> Optional.of(new Queen(Side.WHITE));
+            case "q" -> Optional.of(new Queen(Side.BLACK));
+            case "P" -> Optional.of(new Pawn(Side.WHITE));
+            case "p" -> Optional.of(new Pawn(Side.BLACK));
             default -> Optional.empty();
         };
     }
-
-
 }

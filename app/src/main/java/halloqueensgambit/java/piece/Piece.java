@@ -1,21 +1,15 @@
 package halloqueensgambit.java.piece;
 import java.util.ArrayList;
 import halloqueensgambit.java.Board;
-import halloqueensgambit.java.Game;
+import halloqueensgambit.java.Game.Move;
+import halloqueensgambit.java.Game.Pos;
 import halloqueensgambit.java.Side;
 public interface Piece {
-    //not keeping track of x, y for each piece internally because we are working w AVL Tree
-    //but if we don't keep track of x, y for each piece internally, when we want to find all legal moves
-    //in a game state, we loop through all the pieces that are a color, then we pass their position into themselves
-    //I suppose it isn't that bad. There's always a way to make something different. Let's just go with it
-
-    Game.Pos pos();
+    //keeping track of each piece's Pos means being able to generate legal moves using just the piece and the board
+    //not keeping track means generating legal moves by passing the piece's pos to its function
     Side side();
     int value();
-    ArrayList<Game.Move> allLegalMove(Board board);
-
-    
-
+    ArrayList<Move> allLegalMove(Pos pos, Board board);
 }
 
 
