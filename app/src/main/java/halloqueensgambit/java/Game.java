@@ -2,9 +2,8 @@ package halloqueensgambit.java;
 import halloqueensgambit.java.piece.King;
 import halloqueensgambit.java.piece.Piece;
 
-import javax.swing.text.html.Option;
-import java.util.ArrayList;
 import java.util.Optional;
+import java.util.ArrayList;
 import java.util.Map;
 
 public class Game {
@@ -38,6 +37,24 @@ public class Game {
 
     /*                                METHODS                                */
 
+    //RETURN THE SIDE WHICH HAS TAKEN THE OPPONENT'S KING
+    public Optional<Side> whoHasWon(){
+        boolean hasWhiteKing = false;
+        boolean hasBlackKing = false;
+        for (var entry : this.board){
+            if (entry.getValue().side() == Side.WHITE && entry.getValue() instanceof King)
+                hasWhiteKing = true;
+            if (entry.getValue().side() == Side.BLACK && entry.getValue() instanceof King)
+                hasBlackKing = true;
+        }
+        if (hasWhiteKing && hasBlackKing){
+            return Optional.empty();
+        } else if (hasWhiteKing){
+            return Optional.of(Side.WHITE);
+        } else {
+            return Optional.of(Side.BLACK);
+        }
+    }
     public static boolean inBound(Game.Pos pos){
         return (pos.x() >= 1 && pos.x() <= 8 && pos.y() >= 1 && pos.y() <= 8);
     }

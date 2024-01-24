@@ -27,10 +27,6 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
         return data.entrySet().iterator();
     }
 
-    public boolean hasPiece(Piece p){
-        return this.data.containsValue(p);
-    }
-
     public void addToBoard(Pos pos, Piece piece){
         this.data.put(pos, piece);
     }
