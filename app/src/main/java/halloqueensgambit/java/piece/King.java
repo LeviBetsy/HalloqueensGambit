@@ -81,14 +81,14 @@ public class King implements Piece{
                 }
             } else {
                 var queenRook = board.lookupBoard(new Pos(1, 8)).get();
-                if (queenRook instanceof Rook && queenRook.side() == Side.WHITE && !((Rook) queenRook).hasMoved &&
+                if (queenRook instanceof Rook && queenRook.side() == Side.BLACK && !((Rook) queenRook).hasMoved &&
                         board.lookupBoard(new Pos(2, 8)).isEmpty()
                         && board.lookupBoard(new Pos(3, 8)).isEmpty()
                         && board.lookupBoard(new Pos(4, 8)).isEmpty()) {
                     result.add(new Game.Move(new King(this.side, new Pos(3, 8), true), this.pos, new Pos(3, 8)));
                 }
                 var kingRook = board.lookupBoard(new Pos(8, 8)).get();
-                if (kingRook instanceof Rook && queenRook.side() == Side.WHITE && !((Rook) kingRook).hasMoved &&
+                if (kingRook instanceof Rook && queenRook.side() == Side.BLACK && !((Rook) kingRook).hasMoved &&
                         board.lookupBoard(new Pos(6, 8)).isEmpty()
                         && board.lookupBoard(new Pos(7, 8)).isEmpty()) {
                     result.add(new Game.Move(new King(this.side, new Pos(7, 8), true), this.pos, new Pos(7, 8)));
