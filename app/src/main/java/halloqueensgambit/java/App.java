@@ -35,9 +35,10 @@ public class App {
             fileName = args[0];
         }
         Game game = scanGame(fileName);
-        System.out.println(game);
-        System.out.println();
-        new App().printNextGames(game);
+        System.out.println(game.evaluateBoard());
+        // System.out.println(game);
+        // System.out.println();
+        // new App().printNextGames(game);
     }
     /*                                IO TO SCAN GAME FROM TXT FILES                               */
 

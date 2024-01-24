@@ -1,10 +1,7 @@
 package halloqueensgambit.java;
-import halloqueensgambit.java.piece.King;
 import halloqueensgambit.java.piece.Piece;
 
-import javax.swing.text.html.Option;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.Map;
 
 public class Game {
@@ -14,7 +11,6 @@ public class Game {
         this.side = side;
         this.board = board;
     }
-
 
 
     /*                           DATATYPE                           */
@@ -62,7 +58,9 @@ public class Game {
         return result;
     }
 
-
+    public int evaluateBoard(){
+        return board.evaluate();
+    }
 
     //TODO: Stringbuilder and make this look better
     @Override
