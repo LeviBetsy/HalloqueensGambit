@@ -18,7 +18,6 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
         this.data = new TreeMap<>();
     }
 
-
     /*                               METHODS                           */
 
     //Any use of the Board's iterator is risking modifying the underlying tree
@@ -98,6 +97,15 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
             newData.put(move.end(), move.pieceAfterMove());
         }
         return new Board(newData);
+    }
+
+    public int evaluate(){
+        int eval = 0;
+        // iterate through the board
+        for(Map.Entry<Game.Pos,Piece> entry: this){ 
+            eval += entry.getValue().value(); 
+        }
+        return eval;
     }
 
     //TODO: Stringbuilder

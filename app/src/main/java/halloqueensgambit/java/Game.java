@@ -1,18 +1,58 @@
 package halloqueensgambit.java;
-import halloqueensgambit.java.piece.King;
-import halloqueensgambit.java.piece.Piece;
+import halloqueensgambit.java.piece.*;
 
+<<<<<<< HEAD
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Scanner;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+=======
 import java.util.Optional;
 import java.util.ArrayList;
+>>>>>>> solver
 
 public class Game {
     private Side side;
     private Board board;
+
     public Game(Side side, Board board){
         this.side = side;
         this.board = board;
     }
 
+    public Game(String fileName){
+        try{
+            // Resolve the file path
+            String currentDirectory = System.getProperty("user.dir");
+            // Connect the filepath
+            Path filePath = Paths.get(currentDirectory, "src/main/java/halloqueensgambit/java/games", fileName);
+            Scanner scanner = new Scanner(filePath);
+
+            side = (scanner.nextLine().equals("B")) ? Side.BLACK : Side.WHITE;
+            board = new Board();
+
+            for (int y = 8; y >= 1; y--){
+                String row = scanner.nextLine();
+                //splitting a row into individual squares
+                String[] squares = row.split("\\s+");
+                for (int x = 1; x <= 8; x++){
+                    Optional<Piece> currentPiece = scanPiece(squares[x - 1], new Pos(x,y));
+                    //if scan Piece does not return an Optional value
+                    if (currentPiece.isPresent()){
+                        board.addToBoard(new Pos(x,y), currentPiece.get());
+                    }
+                }
+            }
+            scanner.close();
+
+        } catch(Exception e){
+            System.out.println("Unable to read board: " + e.getLocalizedMessage());
+        }
+    }
 
 
     /*                           DATATYPE                           */
@@ -31,7 +71,6 @@ public class Game {
     //keeping track of the piece after the move so we can make move easier in board
     //TODO: think of not doing that for less overhead space
     public static record Move(Piece pieceAfterMove, Pos start, Pos end){};
-
     public static record OffSet(int dx, int dy){};
 
     /*                                METHODS                                */
@@ -80,8 +119,16 @@ public class Game {
         return nextGames;
     }
 
+<<<<<<< HEAD
+    public int evaluateBoard(){
+        return board.evaluate();
+    }
+
+    //TODO: Stringbuilder and make this look better
+=======
 
     //TODO: Stringbuilder
+>>>>>>> solver
     @Override
     public String toString(){
         String result = "";
@@ -89,4 +136,28 @@ public class Game {
         result += this.board.toString();
         return result;
     }
+<<<<<<< HEAD
+
+    // TODO: consider where this should really go
+    private static Optional<Piece> scanPiece(String c, Pos pos){
+        return switch (c) {
+            case "R" -> Optional.of(new Rook(Side.WHITE, pos,false));
+            case "r" -> Optional.of(new Rook(Side.BLACK, pos,false));
+            case "N" -> Optional.of(new Knight(Side.WHITE, pos));
+            case "n" -> Optional.of(new Knight(Side.BLACK, pos));
+            case "B" -> Optional.of(new Bishop(Side.WHITE, pos));
+            case "b" -> Optional.of(new Bishop(Side.BLACK, pos));
+            case "K" -> Optional.of(new King(Side.WHITE, pos,false));
+            case "k" -> Optional.of(new King(Side.BLACK, pos, false));
+            case "Q" -> Optional.of(new Queen(Side.WHITE, pos));
+            case "q" -> Optional.of(new Queen(Side.BLACK, pos));
+            case "P" -> Optional.of(new Pawn(Side.WHITE, pos));
+            case "p" -> Optional.of(new Pawn(Side.BLACK, pos));
+            default -> Optional.empty();
+        };
+    }
+
+
+=======
+>>>>>>> solver
 }

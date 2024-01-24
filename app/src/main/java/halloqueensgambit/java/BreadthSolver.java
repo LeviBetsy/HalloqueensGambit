@@ -1,15 +1,15 @@
 package halloqueensgambit.java;
 
-public class FogartySolver {
+public class BreadthSolver {
     Game game;
     int turn;
 
-    public FogartySolver(Game game){
+    public BreadthSolver(Game game){
         this.game = game;
         this.turn = 0;
     }
 
-    public FogartySolver(String boardFilePath){
+    public BreadthSolver(String boardFilePath){
         this.game = new Game(boardFilePath);
         this.turn = 0;
     }
@@ -18,5 +18,3 @@ public class FogartySolver {
         return game.evaluateBoard();
     }
 }
-
-
