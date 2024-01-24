@@ -32,7 +32,7 @@ public class Game {
     }
 
     //need to have a record of Move to check whether player's move is legal or not
-    public static record Move(Piece p, Pos start, Pos end){};
+    public static record Move(Piece pieceAfterMove, Pos start, Pos end){};
 
     public static record OffSet(int dx, int dy){};
 

@@ -38,6 +38,7 @@ public class Pawn implements Piece{
 
     @Override
     public ArrayList<Game.Move> allLegalMove(Board board){
+        //TODO: add promotion here
         ArrayList<Game.Move> result = new ArrayList<>();
         if (this.side == WHITE){ //WHITE PAWN
             //PUSHING ONCE
@@ -85,6 +86,7 @@ public class Pawn implements Piece{
                     result.add(new Game.Move(new Pawn(BLACK, p), this.pos, p));
                 }
             }
+
         }
         return result;
     }

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class Rook implements Piece {
     private Side side;
     private Game.Pos pos;
-    private boolean hasMoved;
+    public boolean hasMoved;
     public Rook(Side side, Game.Pos pos, boolean hasMoved){
         this.side = side;
         this.pos = pos;

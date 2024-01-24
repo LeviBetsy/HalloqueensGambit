@@ -16,6 +16,9 @@ import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class App {
+    public String getGreeting(){
+        return "a";
+    }
     public void printNextGames(Game game){
         var lst = game.allNextGames();
         System.out.println("ALL NEXT GAME:");
