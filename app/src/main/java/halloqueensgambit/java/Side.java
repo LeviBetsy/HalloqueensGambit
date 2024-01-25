@@ -15,4 +15,12 @@ public enum Side {
         this.rateMult = rate;
         this.name = name;
     }
+
+    // return the opposite of a given side, for utility
+    public static Side opponent(Side s){
+        if(s == BLACK){
+            return WHITE;
+        }
+        return BLACK;
+    }
 }
