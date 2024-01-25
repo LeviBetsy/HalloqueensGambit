@@ -3,10 +3,12 @@ package halloqueensgambit.java;
 import halloqueensgambit.java.piece.*;
 import halloqueensgambit.java.Game.Pos;
 
-import java.util.TreeMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Iterator;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+
+import static halloqueensgambit.java.IO.scanPiece;
+
 
 public class Board implements Iterable<Map.Entry<Pos, Piece>> {
     /*                           FIELDS AND CONSTRUCTORS                           */
@@ -16,6 +18,35 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
     }
     public Board() {
         this.data = new TreeMap<>();
+    }
+
+    public Board(String fileName) {
+        try{
+            // Resolve the file path
+            String currentDirectory = System.getProperty("user.dir");
+            // Connect the filepath
+            Path filePath = Paths.get(currentDirectory, "src/main/java/halloqueensgambit/java/games", fileName);
+            Scanner scanner = new Scanner(filePath);
+
+            //ignore the side information
+            scanner.nextLine();
+
+            for (int y = 8; y >= 1; y--){
+                String row = scanner.nextLine();
+                //splitting a row into individual squares
+                String[] squares = row.split("\\s+");
+                for (int x = 1; x <= 8; x++){
+                    Optional<Piece> currentPiece = scanPiece(squares[x - 1], new Pos(x,y));
+                    //if scan Piece does not return an Optional value
+                    if (currentPiece.isPresent()){
+                        this.addToBoard(new Pos(x,y), currentPiece.get());
+                    }
+                }
+            }
+            scanner.close();
+        } catch(Exception e){
+            System.out.println("Unable to read board: " + e.getLocalizedMessage());
+        }
     }
 
     /*                               METHODS                           */
@@ -68,6 +99,7 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
             }
         } 
         //CASTLING
+        //TODO: abstract
         else if (movingPiece instanceof King) {
             //CASTLING WHITE QUEEN SIDE
             if (movingPiece.side() == Side.WHITE && move.start().equals(new Pos(5,1) )
@@ -104,6 +136,10 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
             newData.put(move.end(), movingPiece);
         }
         return new Board(newData);
+    }
+
+    public int numPiece(){
+        return this.data.size();
     }
 
     public int evaluate(){
