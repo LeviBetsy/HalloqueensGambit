@@ -1,10 +1,2 @@
 *.class
 *.bin
-*.kts
-*.lock
-*.bat
-app/build/
-.gradle/
-.vscode/
-.idea/
-gradle/
