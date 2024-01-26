@@ -141,12 +141,7 @@ public class Game {
 
         ArrayList<Game> nextGames = new ArrayList<>();
         for (Move m : allLegalMoves){
-            Board nextBoard = this.board.makeMove(m);
-            if (this.side == Side.BLACK){
-                nextGames.add(new Game(Side.WHITE, nextBoard));
-            } else {
-                nextGames.add(new Game(Side.BLACK, nextBoard));
-            }
+            nextGames.add(this.makeMove(m));
         }
         return nextGames;
     }
