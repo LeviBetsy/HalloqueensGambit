@@ -4,7 +4,8 @@ import halloqueensgambit.java.piece.*;
 import halloqueensgambit.java.Game.Move;
 import halloqueensgambit.java.Game.Pos;
 
-import javax.swing.text.html.Option;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
@@ -35,7 +36,7 @@ public class IO {
         this.matchNumber.put('8', 8);
         this.scanner = new Scanner(System.in);
     }
-    public static Optional<Piece> scanPiece(String c, Game.Pos pos){
+    public static Optional<Piece> scanPiece(String c){
         return switch (c) {
             case "R" -> Optional.of(new Rook(Side.WHITE,false));
             case "r" -> Optional.of(new Rook(Side.BLACK,false));
@@ -86,4 +87,28 @@ public class IO {
         // Close the scanner to release resources
         return nextGame;
     }
+
+
+
+    //constructor for creating game from file name
+    //file must be inside of games folder
+    public Game readGameFromFile(String fileName){
+        String fen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+        try{
+            // Resolve the file path
+            String currentDirectory = System.getProperty("user.dir");
+            // Connect the filepath
+            Path filePath = Paths.get(currentDirectory, "src/main/java/halloqueensgambit/java/games", fileName);
+            Scanner scanner = new Scanner(filePath);
+
+            fen = scanner.nextLine();
+            
+            scanner.close();
+        } catch(Exception e){
+            System.out.println("Unable to read board: " + e.getLocalizedMessage());
+        }
+
+        return new Game(fen);
+    }
+
 }

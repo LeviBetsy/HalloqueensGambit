@@ -3,10 +3,7 @@
  */
 package halloqueensgambit.java;
 
-import halloqueensgambit.java.Game.Move;
-import halloqueensgambit.java.Game.Pos;
 import java.io.IOException;
-import java.util.Scanner;
 
 public class App {
     public String getGreeting() {
