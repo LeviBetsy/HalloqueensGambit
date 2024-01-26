@@ -8,9 +8,6 @@ import java.util.TreeMap;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static halloqueensgambit.java.IO.scanPiece;
-
-
 public class Game {
     private Side side;
     private Board board;
@@ -96,22 +93,10 @@ public class Game {
         }
     }
 
-    public boolean hasBothKing(){
-        int sum = 0;
-        for (var entry : this.board){
-            Piece piece = entry.getValue();
-            if (piece instanceof King){
-                sum++;
-            }
-        }
-        return sum == 2;
-    }
-
 
     //this function will return true if at THIS BOARD BUT OPPONENT'S TURN, there is a move to take king
     //for checking stalemate, bc stalemate means you are safe rn but there are no move which endanger you.
     public boolean kingIsChecked(){
-        Game falseGame = new Game(this.side.enemy(), this.board);
         for (var entry : this.board) {
             Piece piece = entry.getValue();
             Pos pos = entry.getKey();
