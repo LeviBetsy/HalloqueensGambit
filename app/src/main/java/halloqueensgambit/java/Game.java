@@ -194,6 +194,12 @@ public class Game {
     public Game makeMove(Move move){
         TreeMap<Pos, Piece> newData = new TreeMap<>(board.data);
         Piece movingPiece = newData.remove(move.start());
+        if (movingPiece instanceof King){
+            ((King) movingPiece).hasMoved = true;
+        } else if (movingPiece instanceof Rook){
+            ((Rook) movingPiece).hasMoved = true;
+        }
+
         //PROMOTION
         if (movingPiece instanceof Pawn) {
             if (movingPiece.side() == Side.WHITE && move.start().y() == 7 && move.end().y() == 8){
