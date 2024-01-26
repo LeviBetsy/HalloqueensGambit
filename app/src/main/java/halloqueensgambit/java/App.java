@@ -3,6 +3,7 @@
  */
 package halloqueensgambit.java;
 import java.io.IOException;
+import java.util.Scanner;
 
 public class App {
     public String getGreeting(){
@@ -17,6 +18,16 @@ public class App {
             System.out.println(g);
         }
     }
+
+    public void twoPlayer(Game game){
+        IO io = new IO();
+        Game newGame = game;
+        //TODO: this is lazy
+        while (true){
+            System.out.println(newGame);
+            newGame = io.playerMove(newGame);
+        }
+    }
     
     public static void main(String[] args) throws IOException {
         String fileName;
@@ -26,9 +37,10 @@ public class App {
             fileName = args[0];
         }
         Game game = new Game(fileName);
-        System.out.println(game);
+//        System.out.println(game);
         System.out.println();
-        new App().printNextGames(game);
+//        new App().printNextGames(game);
+        new App().twoPlayer(game);
     }
     /*                                IO TO SCAN GAME FROM TXT FILES                               */
 }

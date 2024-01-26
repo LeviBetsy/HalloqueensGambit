@@ -15,6 +15,10 @@ repositories {
     mavenCentral()
 }
 
+tasks.withType<JavaExec>() {
+    standardInput = System.`in`
+}
+
 dependencies {
     // Use JUnit Jupiter for testing.
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.3")

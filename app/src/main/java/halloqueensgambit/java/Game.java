@@ -35,7 +35,7 @@ public class Game {
                 //splitting a row into individual squares
                 String[] squares = row.split("\\s+");
                 for (int x = 1; x <= 8; x++){
-                    Optional<Piece> currentPiece = scanPiece(squares[x - 1], new Pos(x,y));
+                    Optional<Piece> currentPiece = IO.scanPiece(squares[x - 1], new Pos(x,y));
                     //if scan Piece does not return an Optional value
                     if (currentPiece.isPresent()){
                         this.board.addToBoard(new Pos(x,y), currentPiece.get());
@@ -155,25 +155,6 @@ public class Game {
         result += "Current player: " + this.side.toString() + "\n";
         result += this.board.toString();
         return result;
-    }
-
-    // TODO: consider where this should really go
-    private static Optional<Piece> scanPiece(String c, Pos pos){
-        return switch (c) {
-            case "R" -> Optional.of(new Rook(Side.WHITE,false));
-            case "r" -> Optional.of(new Rook(Side.BLACK,false));
-            case "N" -> Optional.of(new Knight(Side.WHITE));
-            case "n" -> Optional.of(new Knight(Side.BLACK));
-            case "B" -> Optional.of(new Bishop(Side.WHITE));
-            case "b" -> Optional.of(new Bishop(Side.BLACK));
-            case "K" -> Optional.of(new King(Side.WHITE,false));
-            case "k" -> Optional.of(new King(Side.BLACK, false));
-            case "Q" -> Optional.of(new Queen(Side.WHITE));
-            case "q" -> Optional.of(new Queen(Side.BLACK));
-            case "P" -> Optional.of(new Pawn(Side.WHITE));
-            case "p" -> Optional.of(new Pawn(Side.BLACK));
-            default -> Optional.empty();
-        };
     }
 
     public Game makeMove(Move move){
