@@ -113,6 +113,7 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
                 result += "\n" + "   -------------------------------" + "\n";
             }
         }
+        result += "\n" + "    a   b   c   d   e   f   g   h";
         return result;
     }
 }
