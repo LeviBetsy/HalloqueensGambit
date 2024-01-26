@@ -4,6 +4,7 @@
 package halloqueensgambit.java;
 import halloqueensgambit.java.Game.Move;
 import halloqueensgambit.java.Game.Pos;
+import halloqueensgambit.java.FogartySolver;
 import java.io.IOException;
 
 public class App {
@@ -29,12 +30,12 @@ public class App {
             fileName = args[0];
         }
         Game game = IO.readFromFilepath(fileName);
-        FogartySolver dfs = new FogartySolver(game);
 
         System.out.println(game);
-        System.out.println("Eval at depth 3 is: " + dfs.evaluatePosition(game, 3));
-        System.out.println("Eval at depth 4 is: " + dfs.evaluatePosition(game, 4));
-        System.out.println("Eval at depth 5 is: " + dfs.evaluatePosition(game, 5));
+        // System.out.println("Eval at depth 3 is: " + FogartySolver.bestMove(game, 3));
+        // System.out.println("Eval at depth 4 is: " + FogartySolver.bestMove(game, 4));
+        // System.out.println("Eval at depth 5 is: " + FogartySolver.bestMove(game, 5));
+        System.out.println("Eval at depth 6 is: " + FogartySolver.bestMove(game, 6));
 
         // System.out.println();
         // new App().printNextGames(game);

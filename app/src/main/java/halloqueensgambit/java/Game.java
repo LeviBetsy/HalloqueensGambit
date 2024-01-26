@@ -59,8 +59,6 @@ public class Game {
             }
         }
 
-        System.out.println(this.board.data);
-
         // read the side to move
         this.side = Side.WHITE;
         if(lines[1] == "b"){
