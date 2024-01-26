@@ -35,37 +35,22 @@ public class IO {
         return new Move(startPos, endPos);
     }
 
-    public static Game playerMove(Game game){
-        long startTime = System.currentTimeMillis();
+    public static Game playerMove(Game game, Scanner scanner){
         ArrayList<Move> gameLegalMoves = game.getLegalMoves();
-        long endTime = System.currentTimeMillis();
-        System.out.println("Legal moves elapsed time: " + (endTime - startTime));
-        Scanner scanner = new Scanner(System.in);
 
         Move userMove;
         while (true) {
-            System.out.println("Enter your move (in format a2 a3):");
             String userInput = scanner.nextLine();
-            startTime = System.currentTimeMillis();
             userMove = scanMove(userInput);
-            endTime = System.currentTimeMillis();
-            System.out.println("Scan move elapsed time: " + (endTime - startTime));
             if (!gameLegalMoves.contains(userMove)){
                 System.out.println("Move is not valid, please retry");
             } else {
                 break;
             }
         }
-        startTime = System.currentTimeMillis();
-        Game nextGame = game.makeMove(userMove);
-        endTime = System.currentTimeMillis();
-        System.out.println("Make move elapsed time: " + (endTime - startTime));
-        // Close the scanner to release resources
-        scanner.close();
-        return nextGame;
+        return game.makeMove(userMove);
+        //scanner.close(
     }
-
-
 
     //constructor for creating game from file name
     //file must be inside of games folder

@@ -4,6 +4,7 @@
 package halloqueensgambit.java;
 
 import java.io.IOException;
+import java.util.Scanner;
 
 public class App {
     public String getGreeting() {
@@ -23,11 +24,8 @@ public class App {
         Game newGame = game;
         // TODO: this is lazy
         while (true) {
-            long startTime = System.currentTimeMillis();
             System.out.println(newGame);
-            long endTime = System.currentTimeMillis();
-            System.out.println("Print board elapsed time: " + (endTime - startTime));
-            newGame = IO.playerMove(newGame);
+            newGame = IO.playerMove(newGame, new Scanner(System.in));
         }
     }
 
@@ -41,9 +39,9 @@ public class App {
         Game game = IO.readGameFromFile(fileName);
         // System.out.println(game);
         System.out.println(game);
-        System.out.println(FogartySolver.bestMove(game, 4));
+//        System.out.println(FogartySolver.bestMove(game, 4));
         // new App().printNextGames(game);
-        // new App().twoPlayer(game);
+         new App().twoPlayer(game);
     }
 
     /* IO TO SCAN GAME FROM TXT FILES */
