@@ -4,7 +4,7 @@ import halloqueensgambit.java.piece.*;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Scanner;
-
+import java.util.TreeMap;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -120,6 +120,19 @@ public class Game {
         return board.evaluate();
     }
 
+    public ArrayList<Game.Move> getLegalMoves(){
+        ArrayList<Game.Move> legalMoves = new ArrayList<Game.Move>();
+        //iterate through board entries, i.e. pieces
+        for(Map.Entry<Game.Pos,Piece> entry: this.board){ 
+            if(entry.getValue().side() == side){
+                // get the moves for this piece and add to the big arraylist
+                ArrayList<Game.Move> movesForThisPiece = entry.getValue().allLegalMove(this.board); // ugly af
+                legalMoves.addAll(movesForThisPiece);
+            }
+        }
+        return legalMoves;
+    }
+
     //TODO: Stringbuilder
     @Override
     public String toString(){
@@ -146,5 +159,61 @@ public class Game {
             case "p" -> Optional.of(new Pawn(Side.BLACK));
             default -> Optional.empty();
         };
+    }
+
+    public Game makeMove(Move move){
+        TreeMap<Pos, Piece> newData = new TreeMap<>(board.data);
+        newData.remove(move.start());
+        //PROMOTION
+        if (move.pieceAfterMove() instanceof Pawn) {
+            if (move.pieceAfterMove().side() == Side.WHITE && move.start().y() == 7 && move.end().y() == 8){
+                newData.put(move.end(), new Queen(Side.WHITE, move.end()));
+            } else if (move.pieceAfterMove().side() == Side.BLACK && move.start().y() == 2 && move.end().y() == 1){
+                newData.put(move.end(), new Queen(Side.BLACK, move.end()));
+            } else {
+                newData.put(move.end(), move.pieceAfterMove());
+            }
+        } 
+        //CASTLING
+        else if (move.pieceAfterMove() instanceof King) {
+            //CASTLING WHITE QUEEN SIDE
+            if (move.pieceAfterMove().side() == Side.WHITE && move.start().equals(new Pos(5,1) )
+                    && move.end().equals(new Pos(3,1))){
+                //MOVING THE ROOK
+                newData.remove(new Pos(1,1));
+                newData.put(new Pos(4,1), new Rook(Side.WHITE, new Pos(4,1), true));
+                newData.put(move.end(), move.pieceAfterMove());
+            //CASTLING WHITE KING SIDE
+            } else if (move.pieceAfterMove().side() == Side.WHITE && move.start().equals(new Pos(5,1) )
+                    && move.end().equals(new Pos(7,1))){
+                //MOVING THE ROOK
+                newData.remove(new Pos(8,1));
+                newData.put(new Pos(6,1), new Rook(Side.WHITE, new Pos(6,1), true));
+                newData.put(move.end(), move.pieceAfterMove());
+            //CASTLING BLACK QUEEN SIDE
+            } else if (move.pieceAfterMove().side() == Side.BLACK && move.start().equals(new Pos(5,8) )
+                    && move.end().equals(new Pos(3,8))){
+                //MOVING THE ROOK
+                newData.remove(new Pos(1,8));
+                newData.put(new Pos(4,8), new Rook(Side.BLACK, new Pos(4,8), true));
+                newData.put(move.end(), move.pieceAfterMove());
+            //CASTLING BLACK KING SIDE
+            } else if (move.pieceAfterMove().side() == Side.BLACK && move.start().equals(new Pos(5,8) )
+                    && move.end().equals(new Pos(7,8))) {
+                //MOVING THE ROOK
+                newData.remove(new Pos(8, 8));
+                newData.put(new Pos(6, 8), new Rook(Side.BLACK, new Pos(6, 8), true));
+                newData.put(move.end(), move.pieceAfterMove());
+            } else {
+                newData.put(move.end(), move.pieceAfterMove());
+            }
+        } else {
+            newData.put(move.end(), move.pieceAfterMove());
+        }
+        return new Game(Side.opponent(side), new Board(newData));
+    }
+
+    public Game unMakeMove(Move move){
+        return this;
     }
 }

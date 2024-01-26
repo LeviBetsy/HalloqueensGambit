@@ -10,7 +10,7 @@ import java.util.Iterator;
 
 public class Board implements Iterable<Map.Entry<Pos, Piece>> {
     /*                           FIELDS AND CONSTRUCTORS                           */
-    private TreeMap<Pos, Piece> data;
+    public TreeMap<Pos, Piece> data;
     public Board(TreeMap<Pos, Piece> data){
         this.data = data;
     }
@@ -28,6 +28,7 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
     public void addToBoard(Pos pos, Piece piece){
         this.data.put(pos, piece);
     }
+
 
     public Optional<Piece> lookupBoard(Pos pos){
         Piece p = this.data.get(pos);
