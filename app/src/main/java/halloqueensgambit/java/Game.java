@@ -68,8 +68,6 @@ public class Game {
         }
     }
 
-    //keeping track of the piece after the move so we can make move easier in board
-    //TODO: think of not doing that for less overhead space
     public static record Move(Pos start, Pos end){};
     public static record OffSet(int dx, int dy){};
 

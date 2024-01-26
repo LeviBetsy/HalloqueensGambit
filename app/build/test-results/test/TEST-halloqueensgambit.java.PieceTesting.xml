@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="halloqueensgambit.java.PieceTesting" tests="4" skipped="0" failures="0" errors="0" timestamp="2024-01-26T20:06:15" hostname="apples-mbp-2.trinity.local" time="0.011">
+<testsuite name="halloqueensgambit.java.PieceTesting" tests="4" skipped="0" failures="0" errors="0" timestamp="2024-01-26T20:09:55" hostname="apples-mbp-2.trinity.local" time="0.01">
   <properties/>
-  <testcase name="bishopTest1()" classname="halloqueensgambit.java.PieceTesting" time="0.006"/>
+  <testcase name="bishopTest1()" classname="halloqueensgambit.java.PieceTesting" time="0.005"/>
   <testcase name="bishopTest2()" classname="halloqueensgambit.java.PieceTesting" time="0.001"/>
   <testcase name="rookTest1()" classname="halloqueensgambit.java.PieceTesting" time="0.001"/>
   <testcase name="castleTest1()" classname="halloqueensgambit.java.PieceTesting" time="0.001"/>

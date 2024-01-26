@@ -27,7 +27,10 @@ public class App {
         Game newGame = game;
         // TODO: this is lazy
         while (true) {
+            long startTime = System.currentTimeMillis();
             System.out.println(newGame);
+            long endTime = System.currentTimeMillis();
+            System.out.println("Print board elapsed time: " + (endTime - startTime));
             newGame = io.playerMove(newGame);
         }
     }

@@ -53,38 +53,37 @@ public class IO {
         };
     }
 
-    public Optional<Move> scanMove(String str){
-        String[] positions = str.split(" ");
-        char[] start = positions[0].toCharArray();
-        Integer startx = this.matchLetter.get(start[0]);
-        Integer starty = this.matchNumber.get(start[1]);
-        if (startx == null || starty == null){
-            return Optional.empty();
-        }
-        char[] end = positions[1].toCharArray();
-        Integer endx = this.matchLetter.get(end[0]);
-        Integer endy = this.matchNumber.get(end[1]);
-        if (endx == null || endy == null){
-            return Optional.empty();
-        }
-
-        return Optional.of(new Move(new Pos(startx, starty), new Pos(endx, endy)));
+    public Move scanMove(String str){
+        Pos startPos = new Pos((str.charAt(0) - 'a' + 1), (str.charAt(1) - '1' + 1));
+        Pos endPos = new Pos((str.charAt(3) - 'a' + 1), (str.charAt(4) - '1' + 1));
+        return new Move(startPos, endPos);
     }
 
     public Game playerMove(Game game){
+        long startTime = System.currentTimeMillis();
         ArrayList<Move> gameLegalMoves = game.getLegalMoves();
+        long endTime = System.currentTimeMillis();
+        System.out.println("Legal moves elapsed time: " + (endTime - startTime));
 
-        Optional<Move> userMove = Optional.empty();
-        while (userMove.isEmpty()) {
+        Move userMove;
+        while (true) {
             System.out.println("Enter your move (in format a2 a3):");
-            userMove = scanMove(scanner.nextLine());
-            if (userMove.isEmpty() || !gameLegalMoves.contains(userMove.get())){
-                userMove = Optional.empty();
+            String userInput = scanner.nextLine();
+            startTime = System.currentTimeMillis();
+            userMove = scanMove(userInput);
+            endTime = System.currentTimeMillis();
+            System.out.println("Scan move elapsed time: " + (endTime - startTime));
+            if (!gameLegalMoves.contains(userMove)){
                 System.out.println("Move is not valid, please retry");
+            } else {
+                break;
             }
         }
-
+        startTime = System.currentTimeMillis();
+        Game nextGame = game.makeMove(userMove);
+        endTime = System.currentTimeMillis();
+        System.out.println("Make move elapsed time: " + (endTime - startTime));
         // Close the scanner to release resources
-        return game.makeMove(userMove.get());
+        return nextGame;
     }
 }
