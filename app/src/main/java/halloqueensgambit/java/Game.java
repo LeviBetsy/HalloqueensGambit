@@ -8,6 +8,8 @@ import java.util.TreeMap;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static halloqueensgambit.java.IO.scanPiece;
+
 
 public class Game {
     private Side side;
@@ -28,8 +30,8 @@ public class Game {
             Path filePath = Paths.get(currentDirectory, "src/main/java/halloqueensgambit/java/games", fileName);
             Scanner scanner = new Scanner(filePath);
 
-            side = (scanner.nextLine().equals("B")) ? Side.BLACK : Side.WHITE;
-            board = new Board();
+            this.side = (scanner.nextLine().equals("B")) ? Side.BLACK : Side.WHITE;
+            this.board = new Board();
 
             for (int y = 8; y >= 1; y--){
                 String row = scanner.nextLine();
@@ -39,12 +41,11 @@ public class Game {
                     Optional<Piece> currentPiece = scanPiece(squares[x - 1], new Pos(x,y));
                     //if scan Piece does not return an Optional value
                     if (currentPiece.isPresent()){
-                        board.addToBoard(new Pos(x,y), currentPiece.get());
+                        this.board.addToBoard(new Pos(x,y), currentPiece.get());
                     }
                 }
             }
             scanner.close();
-
         } catch(Exception e){
             System.out.println("Unable to read board: " + e.getLocalizedMessage());
         }
@@ -71,6 +72,10 @@ public class Game {
 
     /*                                METHODS                                */
 
+    public Board getBoard(){
+        return this.board;
+    }
+
     //RETURN THE SIDE WHICH HAS TAKEN THE OPPONENT'S KING
     public Optional<Side> whoHasWon(){
         boolean hasWhiteKing = false;
@@ -90,6 +95,36 @@ public class Game {
             return Optional.of(Side.BLACK);
         }
     }
+
+    public boolean hasBothKing(){
+        int sum = 0;
+        for (var entry : this.board){
+            Piece piece = entry.getValue();
+            if (piece instanceof King){
+                sum++;
+            }
+        }
+        return sum == 2;
+    }
+
+
+    //this function will return true if at THIS BOARD BUT OPPONENT'S TURN, there is a move to take king
+    //for checking stalemate, bc stalemate means you are safe rn but there are no move which endanger you.
+    public boolean kingIsChecked(){
+        Game falseGame = new Game(this.side.enemy(), this.board);
+        for (var entry : this.board) {
+            Piece piece = entry.getValue();
+            Pos pos = entry.getKey();
+            if (piece.side() == this.side){
+                var allMove = piece.allLegalMove(pos, this.board);
+                for (Move m : allMove){
+//                    if ()
+                }
+            }
+        }
+        return false;
+    }
+
     public static boolean inBound(Game.Pos pos){
         return (pos.x() >= 1 && pos.x() <= 8 && pos.y() >= 1 && pos.y() <= 8);
     }
@@ -106,12 +141,7 @@ public class Game {
 
         ArrayList<Game> nextGames = new ArrayList<>();
         for (Move m : allLegalMoves){
-            Board nextBoard = this.board.makeMove(m);
-            if (this.side == Side.BLACK){
-                nextGames.add(new Game(Side.WHITE, nextBoard));
-            } else {
-                nextGames.add(new Game(Side.BLACK, nextBoard));
-            }
+            nextGames.add(this.makeMove(m));
         }
         return nextGames;
     }

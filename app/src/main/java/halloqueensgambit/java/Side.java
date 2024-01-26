@@ -11,6 +11,14 @@ public enum Side {
         return name;
     }
 
+    public Side enemy(){
+        if (this == BLACK){
+            return WHITE;
+        } else {
+            return BLACK;
+        }
+    }
+
     Side(int rate, String name){
         this.rateMult = rate;
         this.name = name;

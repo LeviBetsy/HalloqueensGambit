@@ -3,10 +3,12 @@ package halloqueensgambit.java;
 import halloqueensgambit.java.piece.*;
 import halloqueensgambit.java.Game.Pos;
 
-import java.util.TreeMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Iterator;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+
+import static halloqueensgambit.java.IO.scanPiece;
+
 
 public class Board implements Iterable<Map.Entry<Pos, Piece>> {
     /*                           FIELDS AND CONSTRUCTORS                           */
@@ -16,6 +18,35 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
     }
     public Board() {
         this.data = new TreeMap<>();
+    }
+
+    public Board(String fileName) {
+        try{
+            // Resolve the file path
+            String currentDirectory = System.getProperty("user.dir");
+            // Connect the filepath
+            Path filePath = Paths.get(currentDirectory, "src/main/java/halloqueensgambit/java/games", fileName);
+            Scanner scanner = new Scanner(filePath);
+
+            //ignore the side information
+            scanner.nextLine();
+
+            for (int y = 8; y >= 1; y--){
+                String row = scanner.nextLine();
+                //splitting a row into individual squares
+                String[] squares = row.split("\\s+");
+                for (int x = 1; x <= 8; x++){
+                    Optional<Piece> currentPiece = scanPiece(squares[x - 1], new Pos(x,y));
+                    //if scan Piece does not return an Optional value
+                    if (currentPiece.isPresent()){
+                        this.addToBoard(new Pos(x,y), currentPiece.get());
+                    }
+                }
+            }
+            scanner.close();
+        } catch(Exception e){
+            System.out.println("Unable to read board: " + e.getLocalizedMessage());
+        }
     }
 
     /*                               METHODS                           */
@@ -49,62 +80,8 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
         }
     }
 
-    public Board makeMove(Game.Move move){
-        TreeMap<Pos, Piece> newData = new TreeMap<>(data);
-        Piece movingPiece = newData.remove(move.start());
-        if (movingPiece instanceof King){
-            ((King) movingPiece).hasMoved = true;
-        } else if (movingPiece instanceof Rook){
-            ((Rook) movingPiece).hasMoved = true;
-        }
-
-        //PROMOTION
-        if (movingPiece instanceof Pawn) {
-            if (movingPiece.side() == Side.WHITE && move.start().y() == 7 && move.end().y() == 8){
-                newData.put(move.end(), new Queen(Side.WHITE));
-            } else if (movingPiece.side() == Side.BLACK && move.start().y() == 2 && move.end().y() == 1){
-                newData.put(move.end(), new Queen(Side.BLACK));
-            } else {
-                newData.put(move.end(), movingPiece);
-            }
-        } 
-        //CASTLING
-        else if (movingPiece instanceof King) {
-            //CASTLING WHITE QUEEN SIDE
-            if (movingPiece.side() == Side.WHITE && move.start().equals(new Pos(5,1) )
-                    && move.end().equals(new Pos(3,1))){
-                //MOVING THE ROOK
-                newData.remove(new Pos(1,1));
-                newData.put(new Pos(4,1), new Rook(Side.WHITE, true));
-                newData.put(move.end(), movingPiece);
-            //CASTLING WHITE KING SIDE
-            } else if (movingPiece.side() == Side.WHITE && move.start().equals(new Pos(5,1) )
-                    && move.end().equals(new Pos(7,1))){
-                //MOVING THE ROOK
-                newData.remove(new Pos(8,1));
-                newData.put(new Pos(6,1), new Rook(Side.WHITE, true));
-                newData.put(move.end(), movingPiece);
-            //CASTLING BLACK QUEEN SIDE
-            } else if (movingPiece.side() == Side.BLACK && move.start().equals(new Pos(5,8) )
-                    && move.end().equals(new Pos(3,8))){
-                //MOVING THE ROOK
-                newData.remove(new Pos(1,8));
-                newData.put(new Pos(4,8), new Rook(Side.BLACK, true));
-                newData.put(move.end(), movingPiece);
-            //CASTLING BLACK KING SIDE
-            } else if (movingPiece.side() == Side.BLACK && move.start().equals(new Pos(5,8) )
-                    && move.end().equals(new Pos(7,8))) {
-                //MOVING THE ROOK
-                newData.remove(new Pos(8, 8));
-                newData.put(new Pos(6, 8), new Rook(Side.BLACK, true));
-                newData.put(move.end(), movingPiece);
-            } else {
-                newData.put(move.end(), movingPiece);
-            }
-        } else {
-            newData.put(move.end(), movingPiece);
-        }
-        return new Board(newData);
+    public int numPiece(){
+        return this.data.size();
     }
 
     public int evaluate(){
