@@ -34,8 +34,6 @@ public class Game {
             digits.put((char) i, i-48);
         }
 
-        System.out.println(digits);
-
         // read the board
         for(int current_row = 1; current_row <= 8; current_row ++){
             int current_column = 1;
@@ -50,6 +48,9 @@ public class Game {
                 }
             }
         }
+        
+        this.side = Side.WHITE;
+        if(lines[1] == "b"){this.side = Side.BLACK;}
     }
     
 

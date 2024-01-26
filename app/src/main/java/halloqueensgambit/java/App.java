@@ -20,7 +20,6 @@ public class App {
     }
 
     public void twoPlayer(Game game) {
-        IO io = new IO();
         Game newGame = game;
         // TODO: this is lazy
         while (true) {
@@ -28,7 +27,7 @@ public class App {
             System.out.println(newGame);
             long endTime = System.currentTimeMillis();
             System.out.println("Print board elapsed time: " + (endTime - startTime));
-            newGame = io.playerMove(newGame);
+            newGame = IO.playerMove(newGame);
         }
     }
 
@@ -39,11 +38,12 @@ public class App {
         } else {
             fileName = args[0];
         }
-        Game game = new Game(fileName);
+        Game game = IO.readGameFromFile(fileName);
         // System.out.println(game);
-        System.out.println();
+        System.out.println(game);
+        System.out.println(FogartySolver.bestMove(game, 4));
         // new App().printNextGames(game);
-        new App().twoPlayer(game);
+        // new App().twoPlayer(game);
     }
 
     /* IO TO SCAN GAME FROM TXT FILES */
