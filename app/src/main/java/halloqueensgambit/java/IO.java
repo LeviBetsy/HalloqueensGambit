@@ -4,6 +4,7 @@ import halloqueensgambit.java.piece.*;
 import halloqueensgambit.java.Game.Move;
 import halloqueensgambit.java.Game.Pos;
 
+import javax.swing.text.html.Option;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Optional;
@@ -78,6 +79,7 @@ public class IO {
             System.out.println("Enter your move (in format a2 a3):");
             userMove = scanMove(scanner.nextLine());
             if (userMove.isEmpty() || !gameLegalMoves.contains(userMove.get())){
+                userMove = Optional.empty();
                 System.out.println("Move is not valid, please retry");
             }
         }
