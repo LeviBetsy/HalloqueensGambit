@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="halloqueensgambit.java.AppTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2024-01-26T17:26:00" hostname="apples-mbp-2.trinity.local" time="0.006">
+  <properties/>
+  <testcase name="appHasAGreeting()" classname="halloqueensgambit.java.AppTest" time="0.006"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

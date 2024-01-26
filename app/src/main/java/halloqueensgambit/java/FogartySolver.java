@@ -1,39 +1,43 @@
 package halloqueensgambit.java;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import halloqueensgambit.java.Game.Move;
 
 public class FogartySolver {
-    Game game;
-    int turn;
-
-    public FogartySolver(Game game){
-        this.game = game;
-        this.turn = 0;
+    public record moveRating(Move m, int rating){}
+    private static moveRating moveEstimate(Game game, int depth){
+        if (depth == 0 || !game.hasBothKing()){
+            return new moveRating(null, game.evaluateBoard());
+        } else {
+            Map<Move, moveRating> gameMove = new HashMap<>();
+            for (Move m : game.getLegalMoves()){
+                gameMove.put(m, moveEstimate(game.makeMove(m),depth - 1));
+            }
+            if (game.getSide() == Side.WHITE){
+                moveRating bestMove = new moveRating(null, -10000000);
+                for (var entry : gameMove.entrySet()){
+                    if (entry.getValue().rating > bestMove.rating){
+                        bestMove = new moveRating(entry.getKey(), entry.getValue().rating);
+                    }
+                }
+                return bestMove;
+            } else {
+                moveRating bestMove = new moveRating(null, 10000000);
+                for (var entry : gameMove.entrySet()){
+                    if (entry.getValue().rating < bestMove.rating){
+                        bestMove = new moveRating(entry.getKey(), entry.getValue().rating);
+                    }
+                }
+                return bestMove;
+            }
+        }
     }
 
-    public FogartySolver(String boardFilePath){
-        this.game = new Game(boardFilePath);
-        this.turn = 0;
-    }
-
-    public int evaluatePosition(Game game, int depth){
-        int eval = 0;
-        
-        // base case
-        if(depth == 0){
-            return game.evaluateBoard();
-        }
-        // get legal moves
-        ArrayList<Game.Move> legalMoves = game.getLegalMoves();
-        for(Game.Move m: legalMoves){
-            // make the move, find the result and compare to the current eval
-            // game.makeMove(m);
-            int eval2 = - evaluatePosition(game.makeMove(m), depth-1); // negative because opponents turn
-            eval = Math.max(eval, eval2);
-            // game.unMakeMove(m);
-        }
-        
-        return eval;
+    public static moveRating bestMove(Game game, int depth){
+        return moveEstimate(game, depth);
     }
 }
 

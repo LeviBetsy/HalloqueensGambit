@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import static halloqueensgambit.java.Side.*;
 
 public class Pawn implements Piece{
-    private Side side;
+    private final Side side;
     public Pawn(Side side){
         this.side = side;
     }
