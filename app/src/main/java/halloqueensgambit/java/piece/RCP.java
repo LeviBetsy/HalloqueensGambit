@@ -7,7 +7,6 @@ import halloqueensgambit.java.Side;
 import java.util.ArrayList;
 import java.util.Optional;
 
-// TODO: why do we need a class for this?
 public class RCP {
     public static ArrayList<Game.Pos> RecurCheckPath(ArrayList<Game.Pos> lst, Board b, Side currentSide, Game.Pos pos, Game.OffSet o){
         Game.Pos nextPos = new Game.Pos(pos.x() + o.dx(), pos.y() + o.dy());
