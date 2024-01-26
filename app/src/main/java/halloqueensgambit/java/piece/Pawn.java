@@ -6,7 +6,8 @@ import halloqueensgambit.java.Game.Pos;
 import halloqueensgambit.java.Side;
 
 import java.util.ArrayList;
-import static halloqueensgambit.java.Side.*;
+import static halloqueensgambit.java.Side.WHITE;
+import static halloqueensgambit.java.Side.BLACK;
 
 public class Pawn implements Piece{
     private final Side side;
@@ -34,7 +35,7 @@ public class Pawn implements Piece{
 
     @Override
     public ArrayList<Game.Move> allLegalMove(Pos pos, Board board){
-        //TODO: Pawn promotions
+        //TODO: add promotion here
         ArrayList<Game.Move> result = new ArrayList<>();
         if (this.side == WHITE){ //WHITE PAWN
             //PUSHING ONCE

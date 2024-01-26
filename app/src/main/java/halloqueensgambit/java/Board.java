@@ -7,6 +7,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+import static halloqueensgambit.java.IO.scanPiece;
+
+
 public class Board implements Iterable<Map.Entry<Pos, Piece>> {
     /*                           FIELDS AND CONSTRUCTORS                           */
     public TreeMap<Pos, Piece> data;
@@ -33,7 +36,7 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
                 //splitting a row into individual squares
                 String[] squares = row.split("\\s+");
                 for (int x = 1; x <= 8; x++){
-                    Optional<Piece> currentPiece = IO.scanPiece(squares[x - 1]);
+                    Optional<Piece> currentPiece = scanPiece(squares[x - 1], new Pos(x,y));
                     //if scan Piece does not return an Optional value
                     if (currentPiece.isPresent()){
                         this.addToBoard(new Pos(x,y), currentPiece.get());

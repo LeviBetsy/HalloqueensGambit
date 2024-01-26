@@ -3,7 +3,10 @@
  */
 package halloqueensgambit.java;
 
+import halloqueensgambit.java.Game.Move;
+import halloqueensgambit.java.Game.Pos;
 import java.io.IOException;
+import java.util.Scanner;
 
 public class App {
     public String getGreeting() {
@@ -20,13 +23,15 @@ public class App {
     }
 
     public void twoPlayer(Game game) {
+        IO io = new IO();
         Game newGame = game;
-        while (newGame.hasBothKing()) {
+        // TODO: this is lazy
+        while (true) {
             long startTime = System.currentTimeMillis();
             System.out.println(newGame);
             long endTime = System.currentTimeMillis();
             System.out.println("Print board elapsed time: " + (endTime - startTime));
-            newGame = IO.askForPlayerInput(newGame);
+            newGame = io.playerMove(newGame);
         }
     }
 
