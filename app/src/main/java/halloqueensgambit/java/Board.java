@@ -36,7 +36,7 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
                 //splitting a row into individual squares
                 String[] squares = row.split("\\s+");
                 for (int x = 1; x <= 8; x++){
-                    Optional<Piece> currentPiece = scanPiece(squares[x - 1], new Pos(x,y));
+                    Optional<Piece> currentPiece = scanPiece(squares[x - 1]);
                     //if scan Piece does not return an Optional value
                     if (currentPiece.isPresent()){
                         this.addToBoard(new Pos(x,y), currentPiece.get());

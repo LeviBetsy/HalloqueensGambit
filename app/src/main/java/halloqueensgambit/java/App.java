@@ -21,14 +21,21 @@ public class App {
     public static void main(String[] args) throws IOException {
         String fileName;
         if (args.length == 0){
-            fileName = "initialGame.txt";
+            fileName = "initialGameFEN.txt";
+            fileName = "mates/W3_01.txt";
         } else {
             fileName = args[0];
         }
-        Game game = new Game(fileName);
+        Game game = IO.readFromFilepath(fileName);
+        FogartySolver dfs = new FogartySolver(game);
+
         System.out.println(game);
-        System.out.println();
-        new App().printNextGames(game);
+        System.out.println("Eval at depth 3 is: " + dfs.evaluatePosition(game, 3));
+        System.out.println("Eval at depth 4 is: " + dfs.evaluatePosition(game, 4));
+        System.out.println("Eval at depth 5 is: " + dfs.evaluatePosition(game, 5));
+
+        // System.out.println();
+        // new App().printNextGames(game);
     }
     /*                                IO TO SCAN GAME FROM TXT FILES                               */
 }

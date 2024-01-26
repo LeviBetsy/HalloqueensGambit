@@ -6,8 +6,7 @@ import halloqueensgambit.java.Game.Pos;
 import halloqueensgambit.java.Side;
 
 import java.util.ArrayList;
-import static halloqueensgambit.java.Side.WHITE;
-import static halloqueensgambit.java.Side.BLACK;
+import static halloqueensgambit.java.Side.*;
 
 public class Pawn implements Piece{
     private Side side;

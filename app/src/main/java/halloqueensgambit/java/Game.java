@@ -2,52 +2,65 @@ package halloqueensgambit.java;
 import halloqueensgambit.java.piece.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Optional;
-import java.util.Scanner;
 import java.util.TreeMap;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class Game {
-    private Side side;
     private Board board;
+    private Side side;
+    private boolean castleWhiteKingside;
+    private boolean castleWhiteQueenside;
+    private boolean castleBlackKingside;
+    private boolean castleBlackQueenside;
+    private Pos enPassantTargetSquare;
+    private int halfmoveClock;
+    private int turnCounter;
+
 
     public Game(Side side, Board board){
         this.side = side;
         this.board = board;
     }
 
-    //constructor for creating game from file name
-    //file must be inside of games folder
-    public Game(String fileName){
-        try{
-            // Resolve the file path
-            String currentDirectory = System.getProperty("user.dir");
-            // Connect the filepath
-            Path filePath = Paths.get(currentDirectory, "src/main/java/halloqueensgambit/java/games", fileName);
-            Scanner scanner = new Scanner(filePath);
+    // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
+    public Game(String fen){
+        // split the string appropriately
+        String[] lines = fen.split(" ");
+        String[] rows = lines[0].split("/");
 
-            this.side = (scanner.nextLine().equals("B")) ? Side.BLACK : Side.WHITE;
-            this.board = new Board();
+        this.board = new Board();
+        
+        HashMap<Character, Integer> digits = new HashMap<>();
+        for(int i = 49; i <= 56; i ++){
+            digits.put((char) i, i-48);
+        }
 
-            for (int y = 8; y >= 1; y--){
-                String row = scanner.nextLine();
-                //splitting a row into individual squares
-                String[] squares = row.split("\\s+");
-                for (int x = 1; x <= 8; x++){
-                    Optional<Piece> currentPiece = scanPiece(squares[x - 1], new Pos(x,y));
-                    //if scan Piece does not return an Optional value
-                    if (currentPiece.isPresent()){
-                        this.board.addToBoard(new Pos(x,y), currentPiece.get());
-                    }
+        System.out.println(digits);
+
+        // read the board
+        for(int current_row = 1; current_row <= 8; current_row ++){
+            int current_column = 1;
+            for(char c: rows[8-current_row].toCharArray()){
+                //check digit
+                if(digits.containsKey(c)){
+                    current_column += digits.get(c);
+                }else{
+                    Piece p = IO.scanPiece(Character.toString(c)).get();
+                    this.board.addToBoard(new Game.Pos(current_column, current_row), p);
+                    current_column ++;
                 }
             }
-            scanner.close();
-        } catch(Exception e){
-            System.out.println("Unable to read board: " + e.getLocalizedMessage());
+        }
+
+        System.out.println(this.board.data);
+
+        // read the side to move
+        this.side = Side.WHITE;
+        if(lines[1] == "b"){
+            this.side = Side.BLACK;
         }
     }
-
 
     /*                           DATATYPE                           */
     public static record Pos(int x, int y) implements Comparable<Pos> {
@@ -155,25 +168,6 @@ public class Game {
         result += "Current player: " + this.side.toString() + "\n";
         result += this.board.toString();
         return result;
-    }
-
-    // TODO: consider where this should really go
-    private static Optional<Piece> scanPiece(String c, Pos pos){
-        return switch (c) {
-            case "R" -> Optional.of(new Rook(Side.WHITE,false));
-            case "r" -> Optional.of(new Rook(Side.BLACK,false));
-            case "N" -> Optional.of(new Knight(Side.WHITE));
-            case "n" -> Optional.of(new Knight(Side.BLACK));
-            case "B" -> Optional.of(new Bishop(Side.WHITE));
-            case "b" -> Optional.of(new Bishop(Side.BLACK));
-            case "K" -> Optional.of(new King(Side.WHITE,false));
-            case "k" -> Optional.of(new King(Side.BLACK, false));
-            case "Q" -> Optional.of(new Queen(Side.WHITE));
-            case "q" -> Optional.of(new Queen(Side.BLACK));
-            case "P" -> Optional.of(new Pawn(Side.WHITE));
-            case "p" -> Optional.of(new Pawn(Side.BLACK));
-            default -> Optional.empty();
-        };
     }
 
     public Game makeMove(Move move){

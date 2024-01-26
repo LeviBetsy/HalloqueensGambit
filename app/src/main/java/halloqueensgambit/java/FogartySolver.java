@@ -16,7 +16,7 @@ public class FogartySolver {
         this.turn = 0;
     }
 
-    public int evaluatePosition(int depth){
+    public int evaluatePosition(Game game, int depth){
         int eval = 0;
         
         // base case
@@ -27,10 +27,10 @@ public class FogartySolver {
         ArrayList<Game.Move> legalMoves = game.getLegalMoves();
         for(Game.Move m: legalMoves){
             // make the move, find the result and compare to the current eval
-            game.makeMove(m);
-            int eval2 = - evaluatePosition(depth-1); // negative because opponents turn
+            // game.makeMove(m);
+            int eval2 = - evaluatePosition(game.makeMove(m), depth-1); // negative because opponents turn
             eval = Math.max(eval, eval2);
-            game.unMakeMove(m);
+            // game.unMakeMove(m);
         }
         
         return eval;
