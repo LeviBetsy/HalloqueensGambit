@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class Queen implements Piece{
-    private Side side;
+    private final Side side;
     public Queen(Side side){
         this.side = side;
     }

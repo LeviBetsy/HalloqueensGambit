@@ -11,6 +11,12 @@ import java.nio.file.Paths;
 public class Game {
     private Side side;
     private Board board;
+    public Side getSide(){
+        return this.side;
+    }
+    public Board getBoard(){
+        return this.board;
+    }
 
     public Game(Side side, Board board){
         this.side = side;
@@ -35,7 +41,7 @@ public class Game {
                 //splitting a row into individual squares
                 String[] squares = row.split("\\s+");
                 for (int x = 1; x <= 8; x++){
-                    Optional<Piece> currentPiece = scanPiece(squares[x - 1], new Pos(x,y));
+                    Optional<Piece> currentPiece = IO.scanPiece(squares[x - 1], new Pos(x,y));
                     //if scan Piece does not return an Optional value
                     if (currentPiece.isPresent()){
                         this.board.addToBoard(new Pos(x,y), currentPiece.get());
@@ -69,10 +75,6 @@ public class Game {
 
     /*                                METHODS                                */
 
-    public Board getBoard(){
-        return this.board;
-    }
-
     //RETURN THE SIDE WHICH HAS TAKEN THE OPPONENT'S KING
     public Optional<Side> whoHasWon(){
         boolean hasWhiteKing = false;
@@ -93,19 +95,14 @@ public class Game {
         }
     }
 
-
-    //this function will return true if at THIS BOARD BUT OPPONENT'S TURN, there is a move to take king
-    //for checking stalemate, bc stalemate means you are safe rn but there are no move which endanger you.
-    public boolean kingIsChecked(){
-        for (var entry : this.board) {
-            Piece piece = entry.getValue();
-            Pos pos = entry.getKey();
-            if (piece.side() == this.side){
-                var allMove = piece.allLegalMove(pos, this.board);
-                for (Move m : allMove){
-//                    if ()
-                }
+    public boolean hasBothKing(){
+        int sum = 0;
+        for (var entry : this.board){
+            if (entry.getValue() instanceof King){
+                sum++;
             }
+            if (sum == 2)
+                return true;
         }
         return false;
     }
@@ -135,13 +132,13 @@ public class Game {
         return board.evaluate();
     }
 
-    public ArrayList<Game.Move> getLegalMoves(){
-        ArrayList<Game.Move> legalMoves = new ArrayList<Game.Move>();
+    public ArrayList<Move> getLegalMoves(){
+        ArrayList<Move> legalMoves = new ArrayList<>();
         //iterate through board entries, i.e. pieces
         for(var entry: this.board){ 
-            if(entry.getValue().side() == side){
+            if(entry.getValue().side() == this.side){
                 // get the moves for this piece and add to the big arraylist
-                ArrayList<Game.Move> movesForThisPiece = entry.getValue().allLegalMove(entry.getKey(), this.board); // ugly af
+                ArrayList<Move> movesForThisPiece = entry.getValue().allLegalMove(entry.getKey(), this.board); // ugly af
                 legalMoves.addAll(movesForThisPiece);
             }
         }
@@ -155,25 +152,6 @@ public class Game {
         result += "Current player: " + this.side.toString() + "\n";
         result += this.board.toString();
         return result;
-    }
-
-    // TODO: consider where this should really go
-    private static Optional<Piece> scanPiece(String c, Pos pos){
-        return switch (c) {
-            case "R" -> Optional.of(new Rook(Side.WHITE,false));
-            case "r" -> Optional.of(new Rook(Side.BLACK,false));
-            case "N" -> Optional.of(new Knight(Side.WHITE));
-            case "n" -> Optional.of(new Knight(Side.BLACK));
-            case "B" -> Optional.of(new Bishop(Side.WHITE));
-            case "b" -> Optional.of(new Bishop(Side.BLACK));
-            case "K" -> Optional.of(new King(Side.WHITE,false));
-            case "k" -> Optional.of(new King(Side.BLACK, false));
-            case "Q" -> Optional.of(new Queen(Side.WHITE));
-            case "q" -> Optional.of(new Queen(Side.BLACK));
-            case "P" -> Optional.of(new Pawn(Side.WHITE));
-            case "p" -> Optional.of(new Pawn(Side.BLACK));
-            default -> Optional.empty();
-        };
     }
 
     public Game makeMove(Move move){
