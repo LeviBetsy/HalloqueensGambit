@@ -97,8 +97,17 @@ public class Game {
         return board.evaluate();
     }
 
-    public ArrayList<Move> getLegalMoves(){
-        return board.getLegalMoves(side);
+    public ArrayList<Game.Move> getLegalMoves(){
+        ArrayList<Game.Move> legalMoves = new ArrayList<Game.Move>();
+        //iterate through board entries, i.e. pieces
+        for(Map.Entry<Game.Pos,Piece> entry: this.board){ 
+            if(entry.getValue().side() == side){
+                // get the moves for this piece and add to the big arraylist
+                ArrayList<Game.Move> movesForThisPiece = entry.getValue().allLegalMove(this.board); // ugly af
+                legalMoves.addAll(movesForThisPiece);
+            }
+        }
+        return legalMoves;
     }
 
     //TODO: Stringbuilder and make this look better

@@ -7,7 +7,6 @@ import java.util.TreeMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Iterator;
-import java.util.ArrayList;
 
 public class Board implements Iterable<Map.Entry<Pos, Piece>> {
     /*                           FIELDS AND CONSTRUCTORS                           */
@@ -33,6 +32,7 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
     public void addToBoard(Pos pos, Piece piece){
         this.data.put(pos, piece);
     }
+
     public Optional<Piece> lookupBoard(Pos pos){
         Piece p = this.data.get(pos);
         if (p == null){
@@ -50,19 +50,6 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
         } else {
             return p.side() != side;
         }
-    }
-
-    public ArrayList<Game.Move> getLegalMoves(Side s){
-        ArrayList<Game.Move> legalMoves = new ArrayList<Game.Move>();
-        //iterate through board entries, i.e. pieces
-        for(Map.Entry<Game.Pos,Piece> entry: this){ 
-            if(entry.getValue().side() == s){
-                // get the moves for this piece and add to the big arraylist
-                ArrayList<Game.Move> movesForThisPiece = entry.getValue().allLegalMove(this); // ugly af
-                legalMoves.addAll(movesForThisPiece);
-            }
-        }
-        return legalMoves;
     }
 
     public int evaluate(){
