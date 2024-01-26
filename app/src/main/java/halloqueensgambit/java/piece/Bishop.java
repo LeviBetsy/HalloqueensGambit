@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class Bishop implements Piece{
-    private Side side;
+    private final Side side;
     public Bishop(Side side){
         this.side = side;
     }
@@ -47,9 +47,8 @@ public class Bishop implements Piece{
         }
 
         //DERIVING ALL LEGAL MOVES FROM THOSE POSITION
-        ArrayList<Game.Move> legalMoves = legalPos.stream()
+        return legalPos.stream()
                 .map(end -> new Game.Move(pos, end)) // Modify each element as needed
                 .collect(Collectors.toCollection(ArrayList::new));
-        return legalMoves;
     }
 }

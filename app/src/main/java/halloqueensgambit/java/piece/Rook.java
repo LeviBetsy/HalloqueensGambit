@@ -8,7 +8,7 @@ import halloqueensgambit.java.Game.Pos;
 import java.util.ArrayList;
 
 public class Rook implements Piece {
-    private Side side;
+    private final Side side;
     public boolean hasMoved;
     public Rook(Side side, boolean hasMoved){
         this.side = side;

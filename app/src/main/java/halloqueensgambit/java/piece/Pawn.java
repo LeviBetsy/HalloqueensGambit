@@ -10,7 +10,7 @@ import static halloqueensgambit.java.Side.WHITE;
 import static halloqueensgambit.java.Side.BLACK;
 
 public class Pawn implements Piece{
-    private Side side;
+    private final Side side;
     public Pawn(Side side){
         this.side = side;
     }

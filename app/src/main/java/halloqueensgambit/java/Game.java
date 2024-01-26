@@ -11,6 +11,12 @@ import java.nio.file.Paths;
 public class Game {
     private Side side;
     private Board board;
+    public Side getSide(){
+        return this.side;
+    }
+    public Board getBoard(){
+        return this.board;
+    }
 
     public Game(Side side, Board board){
         this.side = side;
@@ -69,10 +75,6 @@ public class Game {
 
     /*                                METHODS                                */
 
-    public Board getBoard(){
-        return this.board;
-    }
-
     //RETURN THE SIDE WHICH HAS TAKEN THE OPPONENT'S KING
     public Optional<Side> whoHasWon(){
         boolean hasWhiteKing = false;
@@ -93,19 +95,14 @@ public class Game {
         }
     }
 
-
-    //this function will return true if at THIS BOARD BUT OPPONENT'S TURN, there is a move to take king
-    //for checking stalemate, bc stalemate means you are safe rn but there are no move which endanger you.
-    public boolean kingIsChecked(){
-        for (var entry : this.board) {
-            Piece piece = entry.getValue();
-            Pos pos = entry.getKey();
-            if (piece.side() == this.side){
-                var allMove = piece.allLegalMove(pos, this.board);
-                for (Move m : allMove){
-//                    if ()
-                }
+    public boolean hasBothKing(){
+        int sum = 0;
+        for (var entry : this.board){
+            if (entry.getValue() instanceof King){
+                sum++;
             }
+            if (sum == 2)
+                return true;
         }
         return false;
     }
@@ -135,13 +132,13 @@ public class Game {
         return board.evaluate();
     }
 
-    public ArrayList<Game.Move> getLegalMoves(){
-        ArrayList<Game.Move> legalMoves = new ArrayList<Game.Move>();
+    public ArrayList<Move> getLegalMoves(){
+        ArrayList<Move> legalMoves = new ArrayList<>();
         //iterate through board entries, i.e. pieces
         for(var entry: this.board){ 
-            if(entry.getValue().side() == side){
+            if(entry.getValue().side() == this.side){
                 // get the moves for this piece and add to the big arraylist
-                ArrayList<Game.Move> movesForThisPiece = entry.getValue().allLegalMove(entry.getKey(), this.board); // ugly af
+                ArrayList<Move> movesForThisPiece = entry.getValue().allLegalMove(entry.getKey(), this.board); // ugly af
                 legalMoves.addAll(movesForThisPiece);
             }
         }
