@@ -96,24 +96,25 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
     //TODO: Stringbuilder
     @Override
     public String toString(){
-        String result = "";
+        StringBuilder sb = new StringBuilder();
+
         for (int y = 8; y >= 1; y--){
-            result += Integer.toString(y) + "  ";
+            sb.append(Integer.toString(y) + "  ");
             for (int x = 1; x <= 8; x++){
                 Piece current = data.get(new Pos(x, y));
                 if (current != null) {
-                    result += current.toString();
+                    sb.append(current.toString());
                 } else {
-                    result += "   ";
+                    sb.append("   ");
                 }
                 if (x != 8)
-                    result += "|";
+                    sb.append("|");
             }
             if (y != 1) {
-                result += "\n" + "   -------------------------------" + "\n";
+                sb.append("\n" + "   -------------------------------" + "\n");
             }
         }
-        result += "\n" + "    a   b   c   d   e   f   g   h";
-        return result;
+        sb.append("\n" + "    a   b   c   d   e   f   g   h");
+        return sb.toString();
     }
 }
