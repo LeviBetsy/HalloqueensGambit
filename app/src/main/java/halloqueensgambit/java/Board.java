@@ -93,7 +93,6 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
         return eval;
     }
 
-    //TODO: Stringbuilder
     @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();

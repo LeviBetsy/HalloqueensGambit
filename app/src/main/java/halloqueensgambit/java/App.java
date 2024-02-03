@@ -6,6 +6,7 @@ package halloqueensgambit.java;
 import java.io.IOException;
 import java.util.Scanner;
 
+
 public class App {
     public String getGreeting() {
         return "a";
@@ -32,16 +33,18 @@ public class App {
     public static void main(String[] args) throws IOException {
         String fileName;
         if (args.length == 0) {
-            fileName = "initialGame.txt";
+            fileName = "/bestmove/a.txt";
         } else {
             fileName = args[0];
         }
         Game game = IO.readGameFromFile(fileName);
-        // System.out.println(game);
         System.out.println(game);
-//        System.out.println(FogartySolver.bestMove(game, 4));
-        // new App().printNextGames(game);
-         new App().twoPlayer(game);
+
+        FogartySolver.moveRating bestMove_d = FogartySolver.monteCarlo(game, 0, 3, 4);
+        System.out.println("Best move: " + bestMove_d + ", positions seen: " + FogartySolver.positionsSeen);
+        FogartySolver.positionsSeen = 0;
+        System.out.println(game.makeMove(bestMove_d.m()));
+
     }
 
     /* IO TO SCAN GAME FROM TXT FILES */

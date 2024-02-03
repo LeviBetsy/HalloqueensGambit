@@ -1,7 +1,6 @@
 package halloqueensgambit.java;
 
 import halloqueensgambit.java.piece.*;
-import halloqueensgambit.java.Game.Move;
 import halloqueensgambit.java.Game.Pos;
 
 import java.nio.file.Path;
@@ -69,8 +68,6 @@ public class IO {
         } catch(Exception e){
             System.out.println("Unable to read board: " + e.getLocalizedMessage());
         }
-
         return new Game(fen);
     }
-
 }

@@ -4,6 +4,7 @@ import halloqueensgambit.java.Game;
 import halloqueensgambit.java.Side;
 import java.util.stream.Collectors;
 import halloqueensgambit.java.Game.Pos;
+import halloqueensgambit.java.Move;
 
 import java.util.ArrayList;
 
@@ -34,7 +35,7 @@ public class Rook implements Piece {
     }
 
     @Override
-    public ArrayList<Game.Move> allLegalMove(Pos pos, Board board){
+    public ArrayList<Move> allLegalMove(Pos pos, Board board){
         ArrayList<Pos> legalPos = new ArrayList<>();
         Game.OffSet[] offsets = {
                 new Game.OffSet(0, 1),
@@ -47,8 +48,8 @@ public class Rook implements Piece {
             legalPos = RCP.RecurCheckPath(legalPos, board, this.side, pos, offset);
         }
 
-        ArrayList<Game.Move> result = legalPos.stream()
-                .map(end -> new Game.Move(pos, end)) // Modify each element as needed
+        ArrayList<Move> result = legalPos.stream()
+                .map(end -> new Move(pos, end)) // Modify each element as needed
                 .collect(Collectors.toCollection(ArrayList::new));
         return result;
     }

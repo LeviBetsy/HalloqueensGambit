@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import halloqueensgambit.java.Game.Pos;
+import halloqueensgambit.java.Move;
+
 
 public class King implements Piece{
     private final Side side;
@@ -37,7 +39,7 @@ public class King implements Piece{
     }
 
     @Override
-    public ArrayList<Game.Move> allLegalMove(Pos pos, Board board){
+    public ArrayList<Move> allLegalMove(Pos pos, Board board){
         ArrayList<Pos> legalPos = new ArrayList<>();
         Pos[] nextPos = {
                 new Pos(pos.x() + 1, pos.y() + 1),
@@ -56,8 +58,8 @@ public class King implements Piece{
             }
         }
 
-        ArrayList<Game.Move> result = legalPos.stream()
-                .map(end -> new Game.Move(pos, end))
+        ArrayList<Move> result = legalPos.stream()
+                .map(end -> new Move(pos, end))
                 .collect(Collectors.toCollection(ArrayList::new));
 
         //CASTLING
@@ -68,7 +70,7 @@ public class King implements Piece{
                     var queenRook = queenRookSq.get();
                     if (queenRook instanceof Rook && queenRook.side() == Side.WHITE && !((Rook) queenRook).hasMoved &&
                             isAllBlank(Arrays.asList(new Pos(2, 1), new Pos(3, 1), new Pos(4, 1)), board)) {
-                        result.add(new Game.Move(pos, new Pos(3, 1)));
+                        result.add(new Move(pos, new Pos(3, 1)));
                     }
                 }
                 var kingRookSq = board.lookupBoard(new Pos(8, 1));
@@ -76,7 +78,7 @@ public class King implements Piece{
                     var kingRook = kingRookSq.get();
                     if (kingRook instanceof Rook && kingRook.side() == Side.WHITE && !((Rook) kingRook).hasMoved &&
                             isAllBlank(Arrays.asList(new Pos(6, 1), new Pos(7, 1)), board)) {
-                        result.add(new Game.Move(pos, new Pos(7, 1)));
+                        result.add(new Move(pos, new Pos(7, 1)));
                     }
                 }
             } else {
@@ -85,7 +87,7 @@ public class King implements Piece{
                     var queenRook = queenRookSq.get();
                     if (queenRook instanceof Rook && queenRook.side() == Side.BLACK && !((Rook) queenRook).hasMoved &&
                             isAllBlank(Arrays.asList(new Pos(2, 8), new Pos(3, 8), new Pos(4, 8)), board)) {
-                        result.add(new Game.Move(pos, new Pos(3, 8)));
+                        result.add(new Move(pos, new Pos(3, 8)));
                     }
                 }
                 var kingRookSq = board.lookupBoard(new Pos(8, 8));
@@ -93,7 +95,7 @@ public class King implements Piece{
                     var kingRook = kingRookSq.get();
                     if (kingRook instanceof Rook && kingRook.side() == Side.BLACK && !((Rook) kingRook).hasMoved &&
                             isAllBlank(Arrays.asList(new Pos(6, 8), new Pos(7, 8)), board)) {
-                        result.add(new Game.Move(pos, new Pos(7, 8)));
+                        result.add(new Move(pos, new Pos(7, 8)));
                     }
                 }
             }

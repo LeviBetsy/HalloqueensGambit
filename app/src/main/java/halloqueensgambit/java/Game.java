@@ -1,4 +1,5 @@
 package halloqueensgambit.java;
+
 import halloqueensgambit.java.piece.*;
 
 import java.util.ArrayList;
@@ -9,9 +10,11 @@ import java.util.TreeMap;
 public class Game {
     private Side side;
     private Board board;
+
     public Side getSide(){
         return this.side;
     }
+
     public Board getBoard(){
         return this.board;
     }
@@ -50,7 +53,7 @@ public class Game {
         }
         
         this.side = Side.WHITE;
-        if(lines[1] == "b"){this.side = Side.BLACK;}
+        if(lines[1].equals("b")){this.side = Side.BLACK;}
     }
     
 
@@ -67,7 +70,6 @@ public class Game {
         }
     }
 
-    public static record Move(Pos start, Pos end){};
     public static record OffSet(int dx, int dy){};
 
     /*                                METHODS                                */
@@ -151,9 +153,20 @@ public class Game {
         return result;
     }
 
+    public boolean isCheck(){
+        FogartySolver.moveRating bestMove = FogartySolver.exhaustive(new Game(Side.opponent(this.side), this.board), 1);
+        return Math.abs(bestMove.rating()) > 1000;
+    }
+    
+    public boolean isCheckMate(){
+        FogartySolver.moveRating bestMove = FogartySolver.exhaustive(new Game(this.side, this.board), 2);
+        return Math.abs(bestMove.rating()) > 1000;
+    }
+
+
     public Game makeMove(Move move){
         TreeMap<Pos, Piece> newData = new TreeMap<>(board.data);
-        Piece movingPiece = newData.remove(move.start());
+        Piece movingPiece = newData.remove(move.start);
         if (movingPiece instanceof King){
             ((King) movingPiece).hasMoved = true;
         } else if (movingPiece instanceof Rook){
@@ -162,49 +175,49 @@ public class Game {
 
         //PROMOTION
         if (movingPiece instanceof Pawn) {
-            if (movingPiece.side() == Side.WHITE && move.start().y() == 7 && move.end().y() == 8){
-                newData.put(move.end(), new Queen(Side.WHITE));
-            } else if (movingPiece.side() == Side.BLACK && move.start().y() == 2 && move.end().y() == 1){
-                newData.put(move.end(), new Queen(Side.BLACK));
+            if (movingPiece.side() == Side.WHITE && move.start.y() == 7 && move.end.y() == 8){
+                newData.put(move.end, new Queen(Side.WHITE));
+            } else if (movingPiece.side() == Side.BLACK && move.start.y() == 2 && move.end.y() == 1){
+                newData.put(move.end, new Queen(Side.BLACK));
             } else {
-                newData.put(move.end(), movingPiece);
+                newData.put(move.end, movingPiece);
             }
         } 
         //CASTLING
         else if (movingPiece instanceof King) {
             //CASTLING WHITE QUEEN SIDE
-            if (movingPiece.side() == Side.WHITE && move.start().equals(new Pos(5,1) )
-                    && move.end().equals(new Pos(3,1))){
+            if (movingPiece.side() == Side.WHITE && move.start.equals(new Pos(5,1) )
+                    && move.end.equals(new Pos(3,1))){
                 //MOVING THE ROOK
                 newData.remove(new Pos(1,1));
                 newData.put(new Pos(4,1), new Rook(Side.WHITE, true));
-                newData.put(move.end(), movingPiece);
+                newData.put(move.end, movingPiece);
             //CASTLING WHITE KING SIDE
-            } else if (movingPiece.side() == Side.WHITE && move.start().equals(new Pos(5,1) )
-                    && move.end().equals(new Pos(7,1))){
+            } else if (movingPiece.side() == Side.WHITE && move.start.equals(new Pos(5,1) )
+                    && move.end.equals(new Pos(7,1))){
                 //MOVING THE ROOK
                 newData.remove(new Pos(8,1));
                 newData.put(new Pos(6,1), new Rook(Side.WHITE, true));
-                newData.put(move.end(), movingPiece);
+                newData.put(move.end, movingPiece);
             //CASTLING BLACK QUEEN SIDE
-            } else if (movingPiece.side() == Side.BLACK && move.start().equals(new Pos(5,8) )
-                    && move.end().equals(new Pos(3,8))){
+            } else if (movingPiece.side() == Side.BLACK && move.start.equals(new Pos(5,8) )
+                    && move.end.equals(new Pos(3,8))){
                 //MOVING THE ROOK
                 newData.remove(new Pos(1,8));
                 newData.put(new Pos(4,8), new Rook(Side.BLACK, true));
-                newData.put(move.end(), movingPiece);
+                newData.put(move.end, movingPiece);
             //CASTLING BLACK KING SIDE
-            } else if (movingPiece.side() == Side.BLACK && move.start().equals(new Pos(5,8) )
-                    && move.end().equals(new Pos(7,8))) {
+            } else if (movingPiece.side() == Side.BLACK && move.start.equals(new Pos(5,8) )
+                    && move.end.equals(new Pos(7,8))) {
                 //MOVING THE ROOK
                 newData.remove(new Pos(8, 8));
                 newData.put(new Pos(6, 8), new Rook(Side.BLACK, true));
-                newData.put(move.end(), movingPiece);
+                newData.put(move.end, movingPiece);
             } else {
-                newData.put(move.end(), movingPiece);
+                newData.put(move.end, movingPiece);
             }
         } else {
-            newData.put(move.end(), movingPiece);
+            newData.put(move.end, movingPiece);
         }
         return new Game(Side.opponent(side), new Board(newData));
     }
