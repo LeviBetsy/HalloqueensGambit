@@ -47,7 +47,8 @@ public class IO {
                 break;
             }
         }
-        return game.makeMove(userMove);
+        game.makeMove(userMove);
+        return game;
         //scanner.close(
     }
 

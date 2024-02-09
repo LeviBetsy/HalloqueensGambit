@@ -5,9 +5,8 @@ import halloqueensgambit.java.piece.*;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.HashMap;
-import java.util.TreeMap;
 
-public class Game {
+public class Game{
     private Side side;
     private Board board;
 
@@ -122,7 +121,9 @@ public class Game {
 
         ArrayList<Game> nextGames = new ArrayList<>();
         for (Move m : allLegalMoves){
-            nextGames.add(this.makeMove(m));
+            Game tmp = this.copy();
+            tmp.makeMove(m);
+            nextGames.add(tmp);
         }
         return nextGames;
     }
@@ -133,7 +134,7 @@ public class Game {
 
     public ArrayList<Move> getLegalMoves(){
         ArrayList<Move> legalMoves = new ArrayList<>();
-        //iterate through board entries, i.e. pieces
+        //iterate through board entries, i.e. pos/piece tuples
         for(var entry: this.board){ 
             if(entry.getValue().side() == this.side){
                 // get the moves for this piece and add to the big arraylist
@@ -144,7 +145,10 @@ public class Game {
         return legalMoves;
     }
 
-    //TODO: Stringbuilder
+    public Game copy(){
+        return new Game(this.side, this.board);
+    }
+
     @Override
     public String toString(){
         String result = "";
@@ -163,10 +167,9 @@ public class Game {
         return Math.abs(bestMove.rating()) > 1000;
     }
 
-
-    public Game makeMove(Move move){
-        TreeMap<Pos, Piece> newData = new TreeMap<>(board.data);
-        Piece movingPiece = newData.remove(move.start);
+    public void makeMove(Move move){
+        this.side = Side.opponent(side);
+        Piece movingPiece = this.board.data.remove(move.start);
         if (movingPiece instanceof King){
             ((King) movingPiece).hasMoved = true;
         } else if (movingPiece instanceof Rook){
@@ -176,53 +179,96 @@ public class Game {
         //PROMOTION
         if (movingPiece instanceof Pawn) {
             if (movingPiece.side() == Side.WHITE && move.start.y() == 7 && move.end.y() == 8){
-                newData.put(move.end, new Queen(Side.WHITE));
+                this.board.data.put(move.end, new Queen(Side.WHITE));
             } else if (movingPiece.side() == Side.BLACK && move.start.y() == 2 && move.end.y() == 1){
-                newData.put(move.end, new Queen(Side.BLACK));
+                this.board.data.put(move.end, new Queen(Side.BLACK));
             } else {
-                newData.put(move.end, movingPiece);
+                this.board.data.put(move.end, movingPiece);
             }
         } 
+        //TODO: KING HASMOVED
         //CASTLING
         else if (movingPiece instanceof King) {
             //CASTLING WHITE QUEEN SIDE
             if (movingPiece.side() == Side.WHITE && move.start.equals(new Pos(5,1) )
                     && move.end.equals(new Pos(3,1))){
                 //MOVING THE ROOK
-                newData.remove(new Pos(1,1));
-                newData.put(new Pos(4,1), new Rook(Side.WHITE, true));
-                newData.put(move.end, movingPiece);
+                this.board.data.remove(new Pos(1,1));
+                this.board.data.put(new Pos(4,1), new Rook(Side.WHITE, true));
+                this.board.data.put(move.end, movingPiece);
             //CASTLING WHITE KING SIDE
             } else if (movingPiece.side() == Side.WHITE && move.start.equals(new Pos(5,1) )
                     && move.end.equals(new Pos(7,1))){
                 //MOVING THE ROOK
-                newData.remove(new Pos(8,1));
-                newData.put(new Pos(6,1), new Rook(Side.WHITE, true));
-                newData.put(move.end, movingPiece);
+                this.board.data.remove(new Pos(8,1));
+                this.board.data.put(new Pos(6,1), new Rook(Side.WHITE, true));
+                this.board.data.put(move.end, movingPiece);
             //CASTLING BLACK QUEEN SIDE
             } else if (movingPiece.side() == Side.BLACK && move.start.equals(new Pos(5,8) )
                     && move.end.equals(new Pos(3,8))){
                 //MOVING THE ROOK
-                newData.remove(new Pos(1,8));
-                newData.put(new Pos(4,8), new Rook(Side.BLACK, true));
-                newData.put(move.end, movingPiece);
+                this.board.data.remove(new Pos(1,8));
+                this.board.data.put(new Pos(4,8), new Rook(Side.BLACK, true));
+                this.board.data.put(move.end, movingPiece);
             //CASTLING BLACK KING SIDE
             } else if (movingPiece.side() == Side.BLACK && move.start.equals(new Pos(5,8) )
                     && move.end.equals(new Pos(7,8))) {
                 //MOVING THE ROOK
-                newData.remove(new Pos(8, 8));
-                newData.put(new Pos(6, 8), new Rook(Side.BLACK, true));
-                newData.put(move.end, movingPiece);
+                this.board.data.remove(new Pos(8, 8));
+                this.board.data.put(new Pos(6, 8), new Rook(Side.BLACK, true));
+                this.board.data.put(move.end, movingPiece);
             } else {
-                newData.put(move.end, movingPiece);
+                this.board.data.put(move.end, movingPiece);
             }
         } else {
-            newData.put(move.end, movingPiece);
+            this.board.data.put(move.end, movingPiece);
         }
-        return new Game(Side.opponent(side), new Board(newData));
     }
 
-    public Game unMakeMove(Move move){
-        return this;
+    // TODO: TESTING
+    public void unMakeMove(Move move){
+        this.side = Side.opponent(side);
+        Piece movingPiece = this.board.data.remove(move.end);
+
+        // check promotions
+        if(move.isPromotion){
+            this.board.data.put(move.start, new Pawn(movingPiece.side()));
+            return;
+        }
+        
+        // put the moving piece back where it goes
+        this.board.data.put(move.start, movingPiece);
+
+        // handle captures
+        if(move.pieceCaptured.isPresent()){
+            this.board.data.put(move.end, move.pieceCaptured.get());
+        }
+
+        // check castles
+        if(movingPiece instanceof King){
+            // if the king moves more than one space, it must have castled
+            if(move.getDistance() > 1){
+                // put the white king rook back
+                if(move.end.x() == 7 && move.end.y == 1){
+                    Piece kingRook = this.board.data.remove(new Pos(6, 1));
+                    this.board.data.put(new Pos(8, 1), kingRook);
+                }
+                // put the white queen rook back
+                else if(move.end.x() == 3 && move.end.y == 1){
+                    Piece kingRook = this.board.data.remove(new Pos(4, 1));
+                    this.board.data.put(new Pos(1, 1), kingRook);
+                }
+                // put the black king rook back
+                else if(move.end.x() == 7 && move.end.y == 8){
+                    Piece kingRook = this.board.data.remove(new Pos(6, 8));
+                    this.board.data.put(new Pos(8, 8), kingRook);
+                }
+                // put the black queen rook back
+                else if(move.end.x() == 3 && move.end.y == 8){
+                    Piece kingRook = this.board.data.remove(new Pos(4, 8));
+                    this.board.data.put(new Pos(8, 1), kingRook);
+                }
+            }
+        }
     }
 }

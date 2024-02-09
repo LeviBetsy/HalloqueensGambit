@@ -13,6 +13,7 @@ import static halloqueensgambit.java.IO.scanPiece;
 public class Board implements Iterable<Map.Entry<Pos, Piece>> {
     /*                           FIELDS AND CONSTRUCTORS                           */
     public TreeMap<Pos, Piece> data;
+
     public Board(TreeMap<Pos, Piece> data){
         this.data = data;
     }
