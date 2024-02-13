@@ -10,7 +10,7 @@ public class Game{
     private Side side;
     private Board board;
 
-    public Side getSide(){
+    public Side side(){
         return this.side;
     }
 
@@ -90,25 +90,6 @@ public class Game{
         return (pos.x() >= 1 && pos.x() <= 8 && pos.y() >= 1 && pos.y() <= 8);
     }
 
-    public ArrayList<Game> allNextGames(){
-        ArrayList<Move> allLegalMoves = new ArrayList<>();
-        for (var entry : this.board) {
-            Piece piece = entry.getValue();
-            Pos pos = entry.getKey();
-            if (piece.side() == this.side){
-                allLegalMoves.addAll(piece.allLegalMove(pos, this.board));
-            }
-        }
-
-        ArrayList<Game> nextGames = new ArrayList<>();
-        for (Move m : allLegalMoves){
-            Game tmp = this.copy();
-            tmp.makeMove(m);
-            nextGames.add(tmp);
-        }
-        return nextGames;
-    }
-
     public int evaluateBoard(){
         return board.evaluate();
     }
@@ -143,16 +124,6 @@ public class Game{
         if(!(obj instanceof Game)) return false;
         Game other = (Game) obj;
         return this.side.equals(other.side) && this.board.equals(other.board);
-    }
-
-    public boolean isCheck(){
-        FogartySolver.moveRating bestMove = FogartySolver.exhaustive(new Game(Side.opponent(this.side), this.board), 1);
-        return Math.abs(bestMove.rating()) > 1000;
-    }
-    
-    public boolean isCheckMate(){
-        FogartySolver.moveRating bestMove = FogartySolver.exhaustive(new Game(this.side, this.board), 2);
-        return Math.abs(bestMove.rating()) > 1000;
     }
 
     public Optional<Piece> makeMove(Move move){
@@ -217,15 +188,14 @@ public class Game{
         return captured;
     }
 
-    // TODO: TESTING
     public void unMakeMove(Move move, Optional<Piece> captured){
         this.side = Side.opponent(side);
         Piece movingPiece = this.board.data.remove(move.end);
         
         // handle captures AND promotions
-        if(captured.isPresent()){
+        if(captured.isPresent())
             this.board.data.put(move.end, captured.get());
-        }
+
 
         // put the moving piece back where it goes
         this.board.data.put(move.start, movingPiece);
@@ -237,7 +207,6 @@ public class Game{
 
         // check castles
         if(movingPiece instanceof King){
-            System.out.println("Moving piece was king.");
             // if the king moves more than one space, it must have castled
             if(move.getDistance() > 1){
                 System.out.println("Distance greater than 1, castling must have occurred");

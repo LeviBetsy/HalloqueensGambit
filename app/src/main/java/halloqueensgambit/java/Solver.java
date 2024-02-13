@@ -23,26 +23,23 @@ public class Solver {
     }
 
     public int search(int depth){
-        if(depth == 0){
+        if (depth == 0){
             numPositionsSeen ++;
             return this.game.evaluateBoard();
         }
 
-        ArrayList<Move> moves = game.getLegalMoves();
-
-        int eval = this.game.getSide().rateMult * -10000;
+        int eval = this.game.evaluateBoard();
         // Move bestMove = moves.get(0);
-        for(Move m: moves){
+        for(Move m: this.game.getLegalMoves()){
             Optional<Piece> captured = this.game.makeMove(m);
             int newEval = - search(depth - 1);
-            if(newEval > eval){
+            if(this.game.side() == Side.WHITE && newEval > eval){
                 eval = newEval;
-                // bestMove = m;
+            } else if (this.game.side() == Side.BLACK && newEval < eval){
+                eval = newEval;
             }
-
             this.game.unMakeMove(m, captured);
         }
-
         return eval;
     }
 }

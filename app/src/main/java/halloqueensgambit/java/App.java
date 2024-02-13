@@ -10,16 +10,6 @@ public class App {
     public String getGreeting() {
         return "a";
     }
-
-    public void printNextGames(Game game) {
-        var lst = game.allNextGames();
-        System.out.println("ALL NEXT GAME:");
-        for (var g : lst) {
-            System.out.println();
-            System.out.println(g);
-        }
-    }
-
     public void twoPlayer(Game game) {
         Game newGame = game;
         // TODO: this is lazy
@@ -41,8 +31,7 @@ public class App {
         System.out.println(game);
         Solver solver = new Solver(game);
         long start = System.currentTimeMillis();
-        int eval = solver.solve(4);
-        System.out.println("Mutable solver: ");
+        int eval = solver.search(5);
         System.out.println(eval);
         long end = System.currentTimeMillis();
         System.out.println("Time elapsed: " +  (end-start));
