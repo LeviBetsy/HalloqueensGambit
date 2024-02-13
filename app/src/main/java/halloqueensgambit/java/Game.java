@@ -157,7 +157,7 @@ public class Game{
 
     public Optional<Piece> makeMove(Move move){
         Optional<Piece> captured = this.board.lookup(move.end);
-        
+
         this.side = Side.opponent(side);
         Piece movingPiece = this.board.data.remove(move.start);
         if (movingPiece instanceof King){
@@ -176,6 +176,7 @@ public class Game{
                 this.board.data.put(move.end, movingPiece);
             }
         } 
+
         //TODO: KING HASMOVED
         //CASTLING
         else if (movingPiece instanceof King) {
@@ -220,44 +221,49 @@ public class Game{
     public void unMakeMove(Move move, Optional<Piece> captured){
         this.side = Side.opponent(side);
         Piece movingPiece = this.board.data.remove(move.end);
-
-        // check promotions
-        if(move.isPromotion){
-            this.board.data.put(move.start, new Pawn(movingPiece.side()));
-            return;
-        }
         
-        // put the moving piece back where it goes
-        this.board.data.put(move.start, movingPiece);
-
-        // handle captures
+        // handle captures AND promotions
         if(captured.isPresent()){
             this.board.data.put(move.end, captured.get());
         }
 
+        // put the moving piece back where it goes
+        this.board.data.put(move.start, movingPiece);
+
+        // check promotions
+        if(move.isPromotion){
+            this.board.data.put(move.start, new Pawn(this.side));
+        }
+
         // check castles
         if(movingPiece instanceof King){
+            System.out.println("Moving piece was king.");
             // if the king moves more than one space, it must have castled
             if(move.getDistance() > 1){
+                System.out.println("Distance greater than 1, castling must have occurred");
                 // put the white king rook back
                 if(move.end.x() == 7 && move.end.y == 1){
-                    Piece kingRook = this.board.data.remove(new Pos(6, 1));
-                    this.board.data.put(new Pos(8, 1), kingRook);
+                    System.out.println("Uncastle white kingside");
+                    Piece rook = this.board.data.remove(new Pos(6, 1));
+                    this.board.data.put(new Pos(8, 1), rook);
                 }
                 // put the white queen rook back
                 else if(move.end.x() == 3 && move.end.y == 1){
-                    Piece kingRook = this.board.data.remove(new Pos(4, 1));
-                    this.board.data.put(new Pos(1, 1), kingRook);
+                    System.out.println("Uncastle white queenside");
+                    Piece rook = this.board.data.remove(new Pos(4, 1));
+                    this.board.data.put(new Pos(1, 1), rook);
                 }
                 // put the black king rook back
                 else if(move.end.x() == 7 && move.end.y == 8){
-                    Piece kingRook = this.board.data.remove(new Pos(6, 8));
-                    this.board.data.put(new Pos(8, 8), kingRook);
+                    System.out.println("Uncastle black kingside");
+                    Piece rook = this.board.data.remove(new Pos(6, 8));
+                    this.board.data.put(new Pos(8, 8), rook);
                 }
                 // put the black queen rook back
                 else if(move.end.x() == 3 && move.end.y == 8){
-                    Piece kingRook = this.board.data.remove(new Pos(4, 8));
-                    this.board.data.put(new Pos(8, 1), kingRook);
+                    System.out.println("Uncastle black queenside");
+                    Piece rook = this.board.data.remove(new Pos(4, 8));
+                    this.board.data.put(new Pos(1, 8), rook);
                 }
             }
         }

@@ -34,7 +34,6 @@ public class Pawn implements Piece{
 
     @Override
     public ArrayList<Move> allLegalMove(Pos pos, Board board){
-        //TODO: add promotion here
         ArrayList<Move> result = new ArrayList<>();
         if (this.side == WHITE){ //WHITE PAWN
             //PUSHING ONCE
@@ -82,7 +81,11 @@ public class Pawn implements Piece{
                     result.add(new Move(pos, p));
                 }
             }
-
+        }
+        for(int i = 0; i < result.size(); ++i){
+            if(result.get(i).end.y() == 1 || result.get(i).end.y() == 8){
+                result.get(i).isPromotion = true;
+            }
         }
         return result;
     }

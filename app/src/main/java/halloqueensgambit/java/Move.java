@@ -3,12 +3,10 @@ package halloqueensgambit.java;
 import halloqueensgambit.java.Game.Pos;
 import halloqueensgambit.java.piece.*;
 
-import java.util.Optional;
-
 public class Move{
-    Pos start;
-    Pos end;
-    boolean isPromotion;
+    public Pos start;
+    public Pos end;
+    public boolean isPromotion;
 
     public Move(Pos start, Pos end){
         this.start = start;
@@ -32,6 +30,6 @@ public class Move{
     public int getDistance(){
         int horizontal = Math.abs(end.x() - start.x());
         int vertical = Math.abs(end.y() - start.y());
-        return Math.min(horizontal, vertical);
+        return Math.max(horizontal, vertical);
     }
 }
