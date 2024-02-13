@@ -37,13 +37,11 @@ public class Pawn implements Piece{
         ArrayList<Move> result = new ArrayList<>();
         if (this.side == WHITE){ //WHITE PAWN
             //PUSHING ONCE
-            Pos pushOnce = new Pos(pos.x(), pos.y()+ 1);
-            if (board.lookup(pushOnce).isEmpty() ){
-                result.add(new Move(pos, pushOnce));
+            if (board.lookup(pos.x(), pos.y()+ 1).isEmpty() ){
+                result.add(new Move(pos, new Pos(pos.x(), pos.y())));
                 //PUSHING TWICE
-                Pos pushTwice = new Pos(pos.x(), pos.y()+ 2);
-                if (board.lookup(pushTwice).isEmpty()){
-                    result.add(new Move(pos, pushTwice));
+                if (board.lookup(pos.x(), pos.y()+ 2).isEmpty()){
+                    result.add(new Move(pos, new Pos(pos.x(), pos.y()+ 2)));
                 }
             }
 
@@ -53,20 +51,18 @@ public class Pawn implements Piece{
                     new Pos(pos.x() - 1, pos.y() + 1)
             };
             for (Pos p : nextPos){
-                var target = board.lookup(p);
+                var target = board.lookup(p.x(), p.y());
                 if (Game.inBound(p) && target.isPresent() && target.get().side() != this.side){
                     result.add(new Move(pos, p));
                 }
             }
         } else { //BLACK PAWN
             //PUSHING ONCE
-            Pos pushOnce = new Pos(pos.x(), pos.y()- 1);
-            if (board.lookup(pushOnce).isEmpty() ){
-                result.add(new Move(pos, pushOnce));
+            if (board.lookup(pos.x(), pos.y()- 1).isEmpty() ){
+                result.add(new Move(pos, new Pos(pos.x(), pos.y()- 1)));
                 //PUSHING TWICE
-                Pos pushTwice = new Pos(pos.x(), pos.y()- 2);
-                if (board.lookup(pushTwice).isEmpty()){
-                    result.add(new Move(pos, pushTwice));
+                if (board.lookup(pos.x(),pos.y()- 2).isEmpty()){
+                    result.add(new Move(pos, new Pos(pos.x(),pos.y()- 2)));
                 }
             }
 
@@ -76,7 +72,7 @@ public class Pawn implements Piece{
                     new Pos(pos.x() - 1, pos.y() - 1)
             };
             for (Pos p : nextPos){
-                var target = board.lookup(p);
+                var target = board.lookup(p.x(), p.y());
                 if (Game.inBound(p) && target.isPresent() && target.get().side() != this.side){
                     result.add(new Move(pos, p));
                 }

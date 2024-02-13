@@ -95,6 +95,16 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
     }
 
 
+    public Optional<Piece> lookup(int x, int y){
+        Pos pos = new Pos(x, y);
+        Piece p = this.data.get(pos);
+        if (p == null){
+            return Optional.empty();
+        } else {
+            return Optional.of(p);
+        }
+    }
+
     public Optional<Piece> lookup(Pos pos){
         Piece p = this.data.get(pos);
         if (p == null){
@@ -131,17 +141,19 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
     public boolean equals(Object obj){
         if(! (obj instanceof Board)) return false;
         Board other = (Board) obj;
-        
+
         // check this one
         for(Map.Entry<Game.Pos,Piece> entry: this.data.entrySet()){
-            Optional<Piece> p = other.lookup(entry.getKey());
+            Pos pos = entry.getKey();
+            Optional<Piece> p = other.lookup(pos.x(), pos.y());
             if(p.equals(Optional.empty())) return false;
             if(p.get().value() != entry.getValue().value()) return false;
         }
         
         // check the other one
         for(Map.Entry<Game.Pos,Piece> entry: other.data.entrySet()){
-            Optional<Piece> p = this.lookup(entry.getKey());
+            Pos pos = entry.getKey();
+            Optional<Piece> p = this.lookup(pos.x(), pos.y());
             if(p.equals(Optional.empty())) return false;
             if(p.get().value() != entry.getValue().value()) return false;
         }
