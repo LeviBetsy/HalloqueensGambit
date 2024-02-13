@@ -15,11 +15,7 @@ public class Solver {
 
     public int solve(int depth){
         numPositionsSeen = 0;
-        int eval = search(4);
-        System.out.println(eval);
-        System.out.println("Num positions seen: " + numPositionsSeen);
-        numPositionsSeen = 0;
-        return eval;
+        return search(depth);
     }
 
     public int search(int depth){
@@ -29,8 +25,10 @@ public class Solver {
         }
 
         int eval = this.game.evaluation();
-        if (java.lang.Math.abs(eval) > 100)
+        if (java.lang.Math.abs(eval) > 100) {
+            numPositionsSeen ++;
             return eval;
+        }
 
         for(Move m: this.game.getLegalMoves()){
             Optional<Piece> captured = this.game.makeMove(m);

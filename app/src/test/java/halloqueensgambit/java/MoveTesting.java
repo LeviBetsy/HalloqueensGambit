@@ -20,7 +20,7 @@ class MoveTesting {
         ArrayList<Move> moves = game.getLegalMoves();
         
         Game tmp = IO.readGameFromFile(fileName);
-        assertEquals(game.getBoard(), tmp.getBoard());
+        assertEquals(game.board(), tmp.board());
         
         for(Move m: moves){
             Optional<Piece> captured = tmp.makeMove(m);

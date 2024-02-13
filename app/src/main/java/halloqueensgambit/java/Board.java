@@ -143,16 +143,14 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
 
         // check this one
         for(Map.Entry<Game.Pos,Piece> entry: this.data.entrySet()){
-            Pos pos = entry.getKey();
-            Optional<Piece> p = other.lookup(pos.x(), pos.y());
+            Optional<Piece> p = other.lookup(entry.getKey());
             if(p.equals(Optional.empty())) return false;
             if(p.get().value() != entry.getValue().value()) return false;
         }
         
         // check the other one
         for(Map.Entry<Game.Pos,Piece> entry: other.data.entrySet()){
-            Pos pos = entry.getKey();
-            Optional<Piece> p = this.lookup(pos.x(), pos.y());
+            Optional<Piece> p = this.lookup(entry.getKey());
             if(p.equals(Optional.empty())) return false;
             if(p.get().value() != entry.getValue().value()) return false;
         }

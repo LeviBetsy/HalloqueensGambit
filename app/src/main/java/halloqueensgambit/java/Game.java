@@ -11,12 +11,13 @@ public class Game{
     private Board board;
     private int evaluation;
 
+    /*                           SETTERS, GETTERS, CONSTRUCTORS                           */
     public Side side(){
         return this.side;
     }
     public int evaluation() {return this.evaluation;}
 
-    public Board getBoard(){
+    public Board board(){
         return this.board;
     }
 
@@ -104,6 +105,7 @@ public class Game{
 
         this.side = Side.opponent(side);
         Piece movingPiece = this.board.data.remove(move.start);
+
         if (movingPiece instanceof King){
             ((King) movingPiece).hasMoved = true;
         } else if (movingPiece instanceof Rook){
@@ -129,7 +131,6 @@ public class Game{
             }
         } 
 
-        //TODO: KING HASMOVED
         //CASTLING
         else if (movingPiece instanceof King) {
             //CASTLING WHITE QUEEN SIDE

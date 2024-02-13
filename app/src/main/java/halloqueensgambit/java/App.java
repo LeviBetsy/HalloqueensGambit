@@ -30,12 +30,12 @@ public class App {
 
         System.out.println(game);
         Solver solver = new Solver(game);
-//        long start = System.currentTimeMillis();
-        int eval = solver.search(5);
+        long start = System.currentTimeMillis();
+        int eval = solver.solve(5);
         System.out.println(eval);
-//        long end = System.currentTimeMillis();
-//        System.out.println("Time elapsed: " +  (end-start));
-//        double efficiency = Solver.numPositionsSeen/(end-start);
-//        System.out.println("Average positions/second: " + efficiency);
+        long end = System.currentTimeMillis();
+        System.out.println("Time elapsed: " +  (end-start));
+        double efficiency = Solver.numPositionsSeen /(end-start);
+        System.out.println("Average positions/second: " + efficiency);
     }
 }
