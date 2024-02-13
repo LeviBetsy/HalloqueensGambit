@@ -15,7 +15,7 @@ public class RCP {
            return lst;
         }
 
-        Optional<Piece> currentSq = b.lookupBoard(nextPos);
+        Optional<Piece> currentSq = b.lookup(nextPos);
         if (currentSq.isEmpty()){
             lst.add(nextPos);
             return RecurCheckPath(lst, b, currentSide, nextPos, o);

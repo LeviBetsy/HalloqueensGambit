@@ -65,7 +65,7 @@ public class King implements Piece{
         //CASTLING
         if (!this.hasMoved) {
             if (this.side == Side.WHITE) {
-                var queenRookSq = board.lookupBoard(new Pos(1, 1));
+                var queenRookSq = board.lookup(new Pos(1, 1));
                 if (queenRookSq.isPresent()) {
                     var queenRook = queenRookSq.get();
                     if (queenRook instanceof Rook && queenRook.side() == Side.WHITE && !((Rook) queenRook).hasMoved &&
@@ -73,7 +73,7 @@ public class King implements Piece{
                         result.add(new Move(pos, new Pos(3, 1)));
                     }
                 }
-                var kingRookSq = board.lookupBoard(new Pos(8, 1));
+                var kingRookSq = board.lookup(new Pos(8, 1));
                 if (kingRookSq.isPresent()) {
                     var kingRook = kingRookSq.get();
                     if (kingRook instanceof Rook && kingRook.side() == Side.WHITE && !((Rook) kingRook).hasMoved &&
@@ -82,7 +82,7 @@ public class King implements Piece{
                     }
                 }
             } else {
-                var queenRookSq = board.lookupBoard(new Pos(1, 8));
+                var queenRookSq = board.lookup(new Pos(1, 8));
                 if (queenRookSq.isPresent()) {
                     var queenRook = queenRookSq.get();
                     if (queenRook instanceof Rook && queenRook.side() == Side.BLACK && !((Rook) queenRook).hasMoved &&
@@ -90,7 +90,7 @@ public class King implements Piece{
                         result.add(new Move(pos, new Pos(3, 8)));
                     }
                 }
-                var kingRookSq = board.lookupBoard(new Pos(8, 8));
+                var kingRookSq = board.lookup(new Pos(8, 8));
                 if (kingRookSq.isPresent()) {
                     var kingRook = kingRookSq.get();
                     if (kingRook instanceof Rook && kingRook.side() == Side.BLACK && !((Rook) kingRook).hasMoved &&
@@ -105,7 +105,7 @@ public class King implements Piece{
 
     private boolean isAllBlank(List<Pos> squares, Board board){
         for (Pos pos : squares){
-            if (board.lookupBoard(pos).isPresent())
+            if (board.lookup(pos).isPresent())
                 return false;
         }
         return true;

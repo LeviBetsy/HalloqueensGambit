@@ -27,32 +27,13 @@ public class Game{
     public Game(String fen){
         // split the string appropriately
         String[] lines = fen.split(" ");
-        String[] rows = lines[0].split("/");
 
-        this.board = new Board();
-        
-        HashMap<Character, Integer> digits = new HashMap<>();
-        for(int i = 49; i <= 56; i ++){
-            digits.put((char) i, i-48);
-        }
+        this.board = Board.fromFEN(lines[0]);
 
-        // read the board
-        for(int current_row = 1; current_row <= 8; current_row ++){
-            int current_column = 1;
-            for(char c: rows[8-current_row].toCharArray()){
-                //check digit
-                if(digits.containsKey(c)){
-                    current_column += digits.get(c);
-                }else{
-                    Piece p = IO.scanPiece(Character.toString(c)).get();
-                    this.board.addToBoard(new Game.Pos(current_column, current_row), p);
-                    current_column ++;
-                }
-            }
-        }
-        
         this.side = Side.WHITE;
-        if(lines[1].equals("b")){this.side = Side.BLACK;}
+        if(lines[1].equals("b")){
+            this.side = Side.BLACK;
+        }
     }
     
 
@@ -157,6 +138,13 @@ public class Game{
         return result;
     }
 
+    @Override
+    public boolean equals(Object obj){
+        if(!(obj instanceof Game)) return false;
+        Game other = (Game) obj;
+        return this.side.equals(other.side) && this.board.equals(other.board);
+    }
+
     public boolean isCheck(){
         FogartySolver.moveRating bestMove = FogartySolver.exhaustive(new Game(Side.opponent(this.side), this.board), 1);
         return Math.abs(bestMove.rating()) > 1000;
@@ -167,7 +155,9 @@ public class Game{
         return Math.abs(bestMove.rating()) > 1000;
     }
 
-    public void makeMove(Move move){
+    public Optional<Piece> makeMove(Move move){
+        Optional<Piece> captured = this.board.lookup(move.end);
+        
         this.side = Side.opponent(side);
         Piece movingPiece = this.board.data.remove(move.start);
         if (movingPiece instanceof King){
@@ -223,10 +213,11 @@ public class Game{
         } else {
             this.board.data.put(move.end, movingPiece);
         }
+        return captured;
     }
 
     // TODO: TESTING
-    public void unMakeMove(Move move){
+    public void unMakeMove(Move move, Optional<Piece> captured){
         this.side = Side.opponent(side);
         Piece movingPiece = this.board.data.remove(move.end);
 
@@ -240,8 +231,8 @@ public class Game{
         this.board.data.put(move.start, movingPiece);
 
         // handle captures
-        if(move.pieceCaptured.isPresent()){
-            this.board.data.put(move.end, move.pieceCaptured.get());
+        if(captured.isPresent()){
+            this.board.data.put(move.end, captured.get());
         }
 
         // check castles

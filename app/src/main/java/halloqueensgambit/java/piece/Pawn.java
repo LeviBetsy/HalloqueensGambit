@@ -39,11 +39,11 @@ public class Pawn implements Piece{
         if (this.side == WHITE){ //WHITE PAWN
             //PUSHING ONCE
             Pos pushOnce = new Pos(pos.x(), pos.y()+ 1);
-            if (board.lookupBoard(pushOnce).isEmpty() ){
+            if (board.lookup(pushOnce).isEmpty() ){
                 result.add(new Move(pos, pushOnce));
                 //PUSHING TWICE
                 Pos pushTwice = new Pos(pos.x(), pos.y()+ 2);
-                if (board.lookupBoard(pushTwice).isEmpty()){
+                if (board.lookup(pushTwice).isEmpty()){
                     result.add(new Move(pos, pushTwice));
                 }
             }
@@ -54,7 +54,7 @@ public class Pawn implements Piece{
                     new Pos(pos.x() - 1, pos.y() + 1)
             };
             for (Pos p : nextPos){
-                var target = board.lookupBoard(p);
+                var target = board.lookup(p);
                 if (Game.inBound(p) && target.isPresent() && target.get().side() != this.side){
                     result.add(new Move(pos, p));
                 }
@@ -62,11 +62,11 @@ public class Pawn implements Piece{
         } else { //BLACK PAWN
             //PUSHING ONCE
             Pos pushOnce = new Pos(pos.x(), pos.y()- 1);
-            if (board.lookupBoard(pushOnce).isEmpty() ){
+            if (board.lookup(pushOnce).isEmpty() ){
                 result.add(new Move(pos, pushOnce));
                 //PUSHING TWICE
                 Pos pushTwice = new Pos(pos.x(), pos.y()- 2);
-                if (board.lookupBoard(pushTwice).isEmpty()){
+                if (board.lookup(pushTwice).isEmpty()){
                     result.add(new Move(pos, pushTwice));
                 }
             }
@@ -77,7 +77,7 @@ public class Pawn implements Piece{
                     new Pos(pos.x() - 1, pos.y() - 1)
             };
             for (Pos p : nextPos){
-                var target = board.lookupBoard(p);
+                var target = board.lookup(p);
                 if (Game.inBound(p) && target.isPresent() && target.get().side() != this.side){
                     result.add(new Move(pos, p));
                 }
