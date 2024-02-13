@@ -5,8 +5,6 @@ import halloqueensgambit.java.Game;
 import halloqueensgambit.java.Side;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import halloqueensgambit.java.Game.Pos;
@@ -52,7 +50,6 @@ public class King implements Piece{
                 new Pos(pos.x() - 1, pos.y()),
                 new Pos(pos.x() - 1, pos.y() - 1)
         };
-
         for (Pos end : nextPos) {
             if (Game.inBound(end) && board.notAlly(end, this.side))
                 legalPos.add(end);

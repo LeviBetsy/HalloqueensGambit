@@ -15,34 +15,31 @@ public class Solver {
 
     public int solve(int depth){
         numPositionsSeen = 0;
-        int eval = search(4);
-        System.out.println(eval);
-        System.out.println("Num positions seen: " + numPositionsSeen);
-        numPositionsSeen = 0;
-        return eval;
+        return search(depth);
     }
 
     public int search(int depth){
-        if(depth == 0){
+        if (depth == 0){
             numPositionsSeen ++;
-            return this.game.evaluateBoard();
+            return this.game.evaluation();
         }
 
-        ArrayList<Move> moves = game.getLegalMoves();
+        int eval = this.game.evaluation();
+        if (java.lang.Math.abs(eval) > 100) {
+            numPositionsSeen ++;
+            return eval;
+        }
 
-        int eval = this.game.getSide().rateMult * -10000;
-        // Move bestMove = moves.get(0);
-        for(Move m: moves){
+        for(Move m: this.game.getLegalMoves()){
             Optional<Piece> captured = this.game.makeMove(m);
-            int newEval = - search(depth - 1);
-            if(newEval > eval){
+            int newEval = search(depth - 1);
+            if(this.game.side() == Side.WHITE && newEval > eval){
                 eval = newEval;
-                // bestMove = m;
+            } else if (this.game.side() == Side.BLACK && newEval < eval){
+                eval = newEval;
             }
-
             this.game.unMakeMove(m, captured);
         }
-
         return eval;
     }
 }

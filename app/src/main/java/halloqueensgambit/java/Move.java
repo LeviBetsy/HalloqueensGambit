@@ -14,13 +14,7 @@ public class Move{
         this.isPromotion = false;
     }
 
-    public Move(Pos start, Pos end, Piece captured){
-        this.start = start;
-        this.end = end;
-        this.isPromotion = false;
-    }
-
-    public Move(Pos start, Pos end, Piece captured, boolean promotion){
+    public Move(Pos start, Pos end, boolean promotion){
         this.start = start;
         this.end = end;
         this.isPromotion = promotion;

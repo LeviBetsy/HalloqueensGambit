@@ -9,18 +9,22 @@ import java.util.HashMap;
 public class Game{
     private Side side;
     private Board board;
+    private int evaluation;
 
-    public Side getSide(){
+    /*                           SETTERS, GETTERS, CONSTRUCTORS                           */
+    public Side side(){
         return this.side;
     }
+    public int evaluation() {return this.evaluation;}
 
-    public Board getBoard(){
+    public Board board(){
         return this.board;
     }
 
     public Game(Side side, Board board){
         this.side = side;
         this.board = board;
+        this.evaluation = board.evaluate();
     }
 
     // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
@@ -34,6 +38,8 @@ public class Game{
         if(lines[1].equals("b")){
             this.side = Side.BLACK;
         }
+
+        this.evaluation = board.evaluate();
     }
     
 
@@ -54,59 +60,8 @@ public class Game{
 
     /*                                METHODS                                */
 
-    //RETURN THE SIDE WHICH HAS TAKEN THE OPPONENT'S KING
-    public Optional<Side> whoHasWon(){
-        boolean hasWhiteKing = false;
-        boolean hasBlackKing = false;
-        for (var entry : this.board){
-            Piece piece = entry.getValue();
-            if (piece.side() == Side.WHITE && piece instanceof King)
-                hasWhiteKing = true;
-            if (piece.side() == Side.BLACK && piece instanceof King)
-                hasBlackKing = true;
-        }
-        if (hasWhiteKing && hasBlackKing){
-            return Optional.empty();
-        } else if (hasWhiteKing){
-            return Optional.of(Side.WHITE);
-        } else {
-            return Optional.of(Side.BLACK);
-        }
-    }
-
-    public boolean hasBothKing(){
-        int sum = 0;
-        for (var entry : this.board){
-            if (entry.getValue() instanceof King){
-                sum++;
-            }
-            if (sum == 2)
-                return true;
-        }
-        return false;
-    }
-
     public static boolean inBound(Game.Pos pos){
         return (pos.x() >= 1 && pos.x() <= 8 && pos.y() >= 1 && pos.y() <= 8);
-    }
-
-    public ArrayList<Game> allNextGames(){
-        ArrayList<Move> allLegalMoves = new ArrayList<>();
-        for (var entry : this.board) {
-            Piece piece = entry.getValue();
-            Pos pos = entry.getKey();
-            if (piece.side() == this.side){
-                allLegalMoves.addAll(piece.allLegalMove(pos, this.board));
-            }
-        }
-
-        ArrayList<Game> nextGames = new ArrayList<>();
-        for (Move m : allLegalMoves){
-            Game tmp = this.copy();
-            tmp.makeMove(m);
-            nextGames.add(tmp);
-        }
-        return nextGames;
     }
 
     public int evaluateBoard(){
@@ -145,21 +100,12 @@ public class Game{
         return this.side.equals(other.side) && this.board.equals(other.board);
     }
 
-    public boolean isCheck(){
-        FogartySolver.moveRating bestMove = FogartySolver.exhaustive(new Game(Side.opponent(this.side), this.board), 1);
-        return Math.abs(bestMove.rating()) > 1000;
-    }
-    
-    public boolean isCheckMate(){
-        FogartySolver.moveRating bestMove = FogartySolver.exhaustive(new Game(this.side, this.board), 2);
-        return Math.abs(bestMove.rating()) > 1000;
-    }
-
     public Optional<Piece> makeMove(Move move){
         Optional<Piece> captured = this.board.lookup(move.end);
 
         this.side = Side.opponent(side);
         Piece movingPiece = this.board.data.remove(move.start);
+
         if (movingPiece instanceof King){
             ((King) movingPiece).hasMoved = true;
         } else if (movingPiece instanceof Rook){
@@ -168,16 +114,23 @@ public class Game{
 
         //PROMOTION
         if (movingPiece instanceof Pawn) {
-            if (movingPiece.side() == Side.WHITE && move.start.y() == 7 && move.end.y() == 8){
-                this.board.data.put(move.end, new Queen(Side.WHITE));
-            } else if (movingPiece.side() == Side.BLACK && move.start.y() == 2 && move.end.y() == 1){
-                this.board.data.put(move.end, new Queen(Side.BLACK));
+            if (movingPiece.side() == Side.WHITE && move.end.y() == 8){
+                Queen newQueen = new Queen(Side.WHITE);
+                this.board.data.put(move.end, newQueen);
+                //handling evaluation
+                this.evaluation -= movingPiece.value();
+                this.evaluation += newQueen.value();
+            } else if (movingPiece.side() == Side.BLACK && move.end.y() == 1){
+                Queen newQueen = new Queen(Side.BLACK);
+                this.board.data.put(move.end, newQueen);
+                //handling evaluation
+                this.evaluation -= movingPiece.value();
+                this.evaluation += newQueen.value();
             } else {
                 this.board.data.put(move.end, movingPiece);
             }
         } 
 
-        //TODO: KING HASMOVED
         //CASTLING
         else if (movingPiece instanceof King) {
             //CASTLING WHITE QUEEN SIDE
@@ -214,17 +167,19 @@ public class Game{
         } else {
             this.board.data.put(move.end, movingPiece);
         }
+
+        captured.ifPresent(piece -> this.evaluation -= piece.value());
         return captured;
     }
 
-    // TODO: TESTING
     public void unMakeMove(Move move, Optional<Piece> captured){
         this.side = Side.opponent(side);
         Piece movingPiece = this.board.data.remove(move.end);
         
         // handle captures AND promotions
-        if(captured.isPresent()){
+        if(captured.isPresent()) {
             this.board.data.put(move.end, captured.get());
+            this.evaluation += captured.get().value();
         }
 
         // put the moving piece back where it goes
@@ -232,12 +187,15 @@ public class Game{
 
         // check promotions
         if(move.isPromotion){
-            this.board.data.put(move.start, new Pawn(this.side));
+            Pawn pawn = new Pawn(this.side);
+            this.board.data.put(move.start, pawn);
+            //handling evaluation
+            this.evaluation += pawn.value();
+            this.evaluation -= movingPiece.value();
         }
 
         // check castles
         if(movingPiece instanceof King){
-            System.out.println("Moving piece was king.");
             // if the king moves more than one space, it must have castled
             if(move.getDistance() > 1){
                 System.out.println("Distance greater than 1, castling must have occurred");
