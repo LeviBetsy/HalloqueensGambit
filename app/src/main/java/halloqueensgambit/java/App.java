@@ -32,17 +32,21 @@ public class App {
     public static void main(String[] args) throws IOException {
         String fileName;
         if (args.length == 0) {
-            fileName = "initialGame.txt";
+            fileName = "/bestmove/a.txt";
         } else {
             fileName = args[0];
         }
         Game game = IO.readGameFromFile(fileName);
-        // System.out.println(game);
-        System.out.println(game);
-//        System.out.println(FogartySolver.bestMove(game, 4));
-        // new App().printNextGames(game);
-         new App().twoPlayer(game);
-    }
 
-    /* IO TO SCAN GAME FROM TXT FILES */
+        System.out.println(game);
+        Solver solver = new Solver(game);
+        long start = System.currentTimeMillis();
+        int eval = solver.solve(4);
+        System.out.println("Mutable solver: ");
+        System.out.println(eval);
+        long end = System.currentTimeMillis();
+        System.out.println("Time elapsed: " +  (end-start));
+        double efficiency = Solver.numPositionsSeen/(end-start);
+        System.out.println("Average positions/second: " + efficiency);
+    }
 }

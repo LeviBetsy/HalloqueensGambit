@@ -1,10 +1,5 @@
 package halloqueensgambit.java;
 
-import halloqueensgambit.java.piece.Piece;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import halloqueensgambit.java.Game.Pos;
 
 public class PieceTesting {
 //    @Test

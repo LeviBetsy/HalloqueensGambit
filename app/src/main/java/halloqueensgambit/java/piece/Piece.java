@@ -1,7 +1,7 @@
 package halloqueensgambit.java.piece;
 import java.util.ArrayList;
 import halloqueensgambit.java.Board;
-import halloqueensgambit.java.Game.Move;
+import halloqueensgambit.java.Move;
 import halloqueensgambit.java.Game.Pos;
 import halloqueensgambit.java.Side;
 public interface Piece {

@@ -5,7 +5,12 @@ import halloqueensgambit.java.Game.Pos;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Scanner;
+import java.util.Map;
+import java.util.Iterator;
+import java.util.TreeMap;
+import java.util.HashMap;
+import java.util.Optional;
 
 import static halloqueensgambit.java.IO.scanPiece;
 
@@ -13,6 +18,7 @@ import static halloqueensgambit.java.IO.scanPiece;
 public class Board implements Iterable<Map.Entry<Pos, Piece>> {
     /*                           FIELDS AND CONSTRUCTORS                           */
     public TreeMap<Pos, Piece> data;
+
     public Board(TreeMap<Pos, Piece> data){
         this.data = data;
     }
@@ -49,6 +55,34 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
         }
     }
 
+    public static Board fromFEN(String fen){
+        String[] rows = fen.split("/");
+
+        Board board = new Board();
+        
+        HashMap<Character, Integer> digits = new HashMap<>();
+        for(int i = 49; i <= 56; i ++){
+            digits.put((char) i, i-48);
+        }
+
+        // read the board
+        for(int current_row = 1; current_row <= 8; current_row ++){
+            int current_column = 1;
+            for(char c: rows[8-current_row].toCharArray()){
+                //check digit
+                if(digits.containsKey(c)){
+                    current_column += digits.get(c);
+                }else{
+                    Piece p = IO.scanPiece(Character.toString(c)).get();
+                    board.addToBoard(new Game.Pos(current_column, current_row), p);
+                    current_column ++;
+                }
+            }
+        }
+
+        return board;
+    }
+
     /*                               METHODS                           */
 
     //Any use of the Board's iterator is risking modifying the underlying tree
@@ -61,7 +95,17 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
     }
 
 
-    public Optional<Piece> lookupBoard(Pos pos){
+    public Optional<Piece> lookup(int x, int y){
+        Pos pos = new Pos(x, y);
+        Piece p = this.data.get(pos);
+        if (p == null){
+            return Optional.empty();
+        } else {
+            return Optional.of(p);
+        }
+    }
+
+    public Optional<Piece> lookup(Pos pos){
         Piece p = this.data.get(pos);
         if (p == null){
             return Optional.empty();
@@ -93,7 +137,30 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
         return eval;
     }
 
-    //TODO: Stringbuilder
+    @Override
+    public boolean equals(Object obj){
+        if(! (obj instanceof Board)) return false;
+        Board other = (Board) obj;
+
+        // check this one
+        for(Map.Entry<Game.Pos,Piece> entry: this.data.entrySet()){
+            Pos pos = entry.getKey();
+            Optional<Piece> p = other.lookup(pos.x(), pos.y());
+            if(p.equals(Optional.empty())) return false;
+            if(p.get().value() != entry.getValue().value()) return false;
+        }
+        
+        // check the other one
+        for(Map.Entry<Game.Pos,Piece> entry: other.data.entrySet()){
+            Pos pos = entry.getKey();
+            Optional<Piece> p = this.lookup(pos.x(), pos.y());
+            if(p.equals(Optional.empty())) return false;
+            if(p.get().value() != entry.getValue().value()) return false;
+        }
+        
+        return true;
+    }
+
     @Override
     public String toString(){
         StringBuilder sb = new StringBuilder();

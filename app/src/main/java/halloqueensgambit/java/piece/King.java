@@ -7,8 +7,11 @@ import halloqueensgambit.java.Side;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import halloqueensgambit.java.Game.Pos;
+import halloqueensgambit.java.Move;
+
 
 public class King implements Piece{
     private final Side side;
@@ -37,7 +40,7 @@ public class King implements Piece{
     }
 
     @Override
-    public ArrayList<Game.Move> allLegalMove(Pos pos, Board board){
+    public ArrayList<Move> allLegalMove(Pos pos, Board board){
         ArrayList<Pos> legalPos = new ArrayList<>();
         Pos[] nextPos = {
                 new Pos(pos.x() + 1, pos.y() + 1),
@@ -50,60 +53,48 @@ public class King implements Piece{
                 new Pos(pos.x() - 1, pos.y() - 1)
         };
 
-        for (Pos p : nextPos) {
-            if (Game.inBound(p) && board.notAlly(p, this.side)){
-                legalPos.add(p);
-            }
+        for (Pos end : nextPos) {
+            if (Game.inBound(end) && board.notAlly(end, this.side))
+                legalPos.add(end);
         }
 
-        ArrayList<Game.Move> result = legalPos.stream()
-                .map(end -> new Game.Move(pos, end))
+        //convert all legal positions into legalMoves
+        ArrayList<Move> result = legalPos.stream()
+                .map(end -> new Move(pos, end))
                 .collect(Collectors.toCollection(ArrayList::new));
 
         //CASTLING
         if (!this.hasMoved) {
-            if (this.side == Side.WHITE) {
-                var queenRookSq = board.lookupBoard(new Pos(1, 1));
-                if (queenRookSq.isPresent()) {
-                    var queenRook = queenRookSq.get();
-                    if (queenRook instanceof Rook && queenRook.side() == Side.WHITE && !((Rook) queenRook).hasMoved &&
-                            isAllBlank(Arrays.asList(new Pos(2, 1), new Pos(3, 1), new Pos(4, 1)), board)) {
-                        result.add(new Game.Move(pos, new Pos(3, 1)));
-                    }
-                }
-                var kingRookSq = board.lookupBoard(new Pos(8, 1));
-                if (kingRookSq.isPresent()) {
-                    var kingRook = kingRookSq.get();
-                    if (kingRook instanceof Rook && kingRook.side() == Side.WHITE && !((Rook) kingRook).hasMoved &&
-                            isAllBlank(Arrays.asList(new Pos(6, 1), new Pos(7, 1)), board)) {
-                        result.add(new Game.Move(pos, new Pos(7, 1)));
-                    }
-                }
-            } else {
-                var queenRookSq = board.lookupBoard(new Pos(1, 8));
-                if (queenRookSq.isPresent()) {
-                    var queenRook = queenRookSq.get();
-                    if (queenRook instanceof Rook && queenRook.side() == Side.BLACK && !((Rook) queenRook).hasMoved &&
-                            isAllBlank(Arrays.asList(new Pos(2, 8), new Pos(3, 8), new Pos(4, 8)), board)) {
-                        result.add(new Game.Move(pos, new Pos(3, 8)));
-                    }
-                }
-                var kingRookSq = board.lookupBoard(new Pos(8, 8));
-                if (kingRookSq.isPresent()) {
-                    var kingRook = kingRookSq.get();
-                    if (kingRook instanceof Rook && kingRook.side() == Side.BLACK && !((Rook) kingRook).hasMoved &&
-                            isAllBlank(Arrays.asList(new Pos(6, 8), new Pos(7, 8)), board)) {
-                        result.add(new Game.Move(pos, new Pos(7, 8)));
-                    }
-                }
+            if (this.side == Side.WHITE && pos.equals(new Pos(5, 1))){
+                if (rookCanCastle(new Pos(1, 1), pos, board))
+                    result.add(new Move(pos, new Pos(3, 1)));
+                if (rookCanCastle(new Pos(8,1), pos, board))
+                    result.add(new Move(pos, new Pos(7, 1)));
+            } else if (this.side == Side.BLACK && pos.equals(new Pos(5, 8))){
+                if (rookCanCastle(new Pos(1, 8), pos, board))
+                    result.add(new Move(pos, new Pos(3, 8)));
+                if (rookCanCastle(new Pos(8,8), pos, board))
+                    result.add(new Move(pos, new Pos(7, 8)));
             }
         }
         return result;
     }
+    //returns true if it is valid to castle with the rook and the rook exists
+    private boolean rookCanCastle(Pos rookPos, Pos kingPos, Board board){
+        Optional<Piece> rook = board.lookup(rookPos.x(), rookPos.y());
+        return rook.isPresent() && rook.get() instanceof Rook
+                && rook.get().side() == this.side && !((Rook) rook.get()).hasMoved
+                && blankBetween(rookPos, kingPos, board);
+    }
 
-    private boolean isAllBlank(List<Pos> squares, Board board){
-        for (Pos pos : squares){
-            if (board.lookupBoard(pos).isPresent())
+    //returns true if the spaces between a king and a rook is all blank
+    private boolean blankBetween(Pos rookPos, Pos kingPos, Board board){
+        int multiplier = 1;
+        if (rookPos.x() < kingPos.x())
+            multiplier = -1;
+        //kingPos.x() + (dx * multiplier) == x coordinate of the spaces in between
+        for (int dx = 1; (kingPos.x() + (dx * multiplier) != rookPos.x()); dx++) {
+            if (board.lookup(kingPos.x() + (dx * multiplier), kingPos.y()).isPresent())
                 return false;
         }
         return true;
