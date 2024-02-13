@@ -55,9 +55,8 @@ public class Knight implements Piece{
             }
         }
 
-        ArrayList<Move> result = legalPos.stream()
+        return legalPos.stream()
                 .map(end -> new Move(pos, end)) // Modify each element as needed
                 .collect(Collectors.toCollection(ArrayList::new));
-        return result;
     }
 }

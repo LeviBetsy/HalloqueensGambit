@@ -34,55 +34,49 @@ public class Pawn implements Piece{
 
     @Override
     public ArrayList<Move> allLegalMove(Pos pos, Board board){
+        if (this.side == WHITE){
+            return pawnMoves(pos, board, 1);
+        } else {
+            return pawnMoves(pos, board, -1);
+        }
+    }
+
+    public ArrayList<Move> pawnMoves(Pos pos, Board board, int dir){
         ArrayList<Move> result = new ArrayList<>();
-        if (this.side == WHITE){ //WHITE PAWN
-            //PUSHING ONCE
-            if (board.lookup(pos.x(), pos.y()+ 1).isEmpty() ){
-                result.add(new Move(pos, new Pos(pos.x(), pos.y())));
-                //PUSHING TWICE
-                if (board.lookup(pos.x(), pos.y()+ 2).isEmpty()){
-                    result.add(new Move(pos, new Pos(pos.x(), pos.y()+ 2)));
-                }
-            }
-
-            //CAPTURES
-            Pos[] nextPos = {
-                    new Pos(pos.x() + 1, pos.y() + 1),
-                    new Pos(pos.x() - 1, pos.y() + 1)
-            };
-            for (Pos p : nextPos){
-                var target = board.lookup(p.x(), p.y());
-                if (Game.inBound(p) && target.isPresent() && target.get().side() != this.side){
-                    result.add(new Move(pos, p));
-                }
-            }
-        } else { //BLACK PAWN
-            //PUSHING ONCE
-            if (board.lookup(pos.x(), pos.y()- 1).isEmpty() ){
-                result.add(new Move(pos, new Pos(pos.x(), pos.y()- 1)));
-                //PUSHING TWICE
-                if (board.lookup(pos.x(),pos.y()- 2).isEmpty()){
-                    result.add(new Move(pos, new Pos(pos.x(),pos.y()- 2)));
-                }
-            }
-
-            //CAPTURES
-            Pos[] nextPos = {
-                    new Pos(pos.x() + 1, pos.y() - 1),
-                    new Pos(pos.x() - 1, pos.y() - 1)
-            };
-            for (Pos p : nextPos){
-                var target = board.lookup(p.x(), p.y());
-                if (Game.inBound(p) && target.isPresent() && target.get().side() != this.side){
-                    result.add(new Move(pos, p));
+        //PUSHING ONCE
+        Pos pushOnce = new Pos(pos.x(), pos.y() + dir);
+        if (board.lookup(pushOnce).isEmpty() ){
+            //PROMOTION
+            if ((pos.y() + dir == 8) || (pos.y() + dir == 1))
+                result.add(new Move(pos, pushOnce, true));
+            else
+                result.add(new Move(pos, pushOnce));
+            //PUSHING TWICE
+            if ((this.side == WHITE && pos.y() == 2) || (this.side == BLACK && pos.y() == 7)) {
+                Pos pushTwice = new Pos(pos.x(), pos.y() + 2 * dir);
+                if (board.lookup(pushTwice).isEmpty()) {
+                    result.add(new Move(pos, pushTwice));
                 }
             }
         }
-        for(int i = 0; i < result.size(); ++i){
-            if(result.get(i).end.y() == 1 || result.get(i).end.y() == 8){
-                result.get(i).isPromotion = true;
+
+        //CAPTURES
+        Pos[] caps = {
+                new Pos(pos.x() + 1, pos.y() + dir),
+                new Pos(pos.x() - 1, pos.y() + dir)
+        };
+
+        for (Pos cap : caps){
+            var target = board.lookup(cap.x(), cap.y());
+            if (Game.inBound(cap) && target.isPresent() && target.get().side() != this.side){
+                if ((pos.y() + dir == 8) || (pos.y() + dir == 1))
+                    result.add(new Move(pos, cap, true));
+                else
+                    result.add(new Move(pos, cap));
             }
         }
+
         return result;
     }
+
 }

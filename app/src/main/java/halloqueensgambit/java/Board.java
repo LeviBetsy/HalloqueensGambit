@@ -93,6 +93,9 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
     public void addToBoard(Pos pos, Piece piece){
         this.data.put(pos, piece);
     }
+    public void addToBoard(int x, int y, Piece piece){
+        this.data.put(new Pos(x,y), piece);
+    }
 
 
     public Optional<Piece> lookup(int x, int y){
@@ -122,10 +125,6 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
         } else {
             return p.side() != side;
         }
-    }
-
-    public int numPiece(){
-        return this.data.size();
     }
 
     public int evaluate(){

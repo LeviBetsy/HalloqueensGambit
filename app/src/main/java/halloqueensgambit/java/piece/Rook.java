@@ -48,10 +48,9 @@ public class Rook implements Piece {
             legalPos = RCP.RecurCheckPath(legalPos, board, this.side, pos, offset);
         }
 
-        ArrayList<Move> result = legalPos.stream()
+        return legalPos.stream()
                 .map(end -> new Move(pos, end)) // Modify each element as needed
                 .collect(Collectors.toCollection(ArrayList::new));
-        return result;
     }
 
 }

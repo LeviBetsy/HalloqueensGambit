@@ -25,14 +25,16 @@ public class Solver {
     public int search(int depth){
         if (depth == 0){
             numPositionsSeen ++;
-            return this.game.evaluateBoard();
+            return this.game.evaluation();
         }
 
-        int eval = this.game.evaluateBoard();
-        // Move bestMove = moves.get(0);
+        int eval = this.game.evaluation();
+        if (java.lang.Math.abs(eval) > 100)
+            return eval;
+
         for(Move m: this.game.getLegalMoves()){
             Optional<Piece> captured = this.game.makeMove(m);
-            int newEval = - search(depth - 1);
+            int newEval = search(depth - 1);
             if(this.game.side() == Side.WHITE && newEval > eval){
                 eval = newEval;
             } else if (this.game.side() == Side.BLACK && newEval < eval){

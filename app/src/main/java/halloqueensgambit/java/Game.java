@@ -9,10 +9,12 @@ import java.util.HashMap;
 public class Game{
     private Side side;
     private Board board;
+    private int evaluation;
 
     public Side side(){
         return this.side;
     }
+    public int evaluation() {return this.evaluation;}
 
     public Board getBoard(){
         return this.board;
@@ -21,6 +23,7 @@ public class Game{
     public Game(Side side, Board board){
         this.side = side;
         this.board = board;
+        this.evaluation = board.evaluate();
     }
 
     // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
@@ -34,6 +37,8 @@ public class Game{
         if(lines[1].equals("b")){
             this.side = Side.BLACK;
         }
+
+        this.evaluation = board.evaluate();
     }
     
 
@@ -53,38 +58,6 @@ public class Game{
     public static record OffSet(int dx, int dy){};
 
     /*                                METHODS                                */
-
-    //RETURN THE SIDE WHICH HAS TAKEN THE OPPONENT'S KING
-    public Optional<Side> whoHasWon(){
-        boolean hasWhiteKing = false;
-        boolean hasBlackKing = false;
-        for (var entry : this.board){
-            Piece piece = entry.getValue();
-            if (piece.side() == Side.WHITE && piece instanceof King)
-                hasWhiteKing = true;
-            if (piece.side() == Side.BLACK && piece instanceof King)
-                hasBlackKing = true;
-        }
-        if (hasWhiteKing && hasBlackKing){
-            return Optional.empty();
-        } else if (hasWhiteKing){
-            return Optional.of(Side.WHITE);
-        } else {
-            return Optional.of(Side.BLACK);
-        }
-    }
-
-    public boolean hasBothKing(){
-        int sum = 0;
-        for (var entry : this.board){
-            if (entry.getValue() instanceof King){
-                sum++;
-            }
-            if (sum == 2)
-                return true;
-        }
-        return false;
-    }
 
     public static boolean inBound(Game.Pos pos){
         return (pos.x() >= 1 && pos.x() <= 8 && pos.y() >= 1 && pos.y() <= 8);
@@ -139,10 +112,18 @@ public class Game{
 
         //PROMOTION
         if (movingPiece instanceof Pawn) {
-            if (movingPiece.side() == Side.WHITE && move.start.y() == 7 && move.end.y() == 8){
-                this.board.data.put(move.end, new Queen(Side.WHITE));
-            } else if (movingPiece.side() == Side.BLACK && move.start.y() == 2 && move.end.y() == 1){
-                this.board.data.put(move.end, new Queen(Side.BLACK));
+            if (movingPiece.side() == Side.WHITE && move.end.y() == 8){
+                Queen newQueen = new Queen(Side.WHITE);
+                this.board.data.put(move.end, newQueen);
+                //handling evaluation
+                this.evaluation -= movingPiece.value();
+                this.evaluation += newQueen.value();
+            } else if (movingPiece.side() == Side.BLACK && move.end.y() == 1){
+                Queen newQueen = new Queen(Side.BLACK);
+                this.board.data.put(move.end, newQueen);
+                //handling evaluation
+                this.evaluation -= movingPiece.value();
+                this.evaluation += newQueen.value();
             } else {
                 this.board.data.put(move.end, movingPiece);
             }
@@ -185,6 +166,8 @@ public class Game{
         } else {
             this.board.data.put(move.end, movingPiece);
         }
+
+        captured.ifPresent(piece -> this.evaluation -= piece.value());
         return captured;
     }
 
@@ -193,16 +176,21 @@ public class Game{
         Piece movingPiece = this.board.data.remove(move.end);
         
         // handle captures AND promotions
-        if(captured.isPresent())
+        if(captured.isPresent()) {
             this.board.data.put(move.end, captured.get());
-
+            this.evaluation += captured.get().value();
+        }
 
         // put the moving piece back where it goes
         this.board.data.put(move.start, movingPiece);
 
         // check promotions
         if(move.isPromotion){
-            this.board.data.put(move.start, new Pawn(this.side));
+            Pawn pawn = new Pawn(this.side);
+            this.board.data.put(move.start, pawn);
+            //handling evaluation
+            this.evaluation += pawn.value();
+            this.evaluation -= movingPiece.value();
         }
 
         // check castles
