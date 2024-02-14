@@ -80,4 +80,14 @@ class MoveTesting {
         }
 
     }
+
+    @Test void unMakePromotion(){
+        Game game = IO.readGameFromFile("mateIn1aa.txt");
+        Move takeKingPromote = new Move(new Game.Pos(7,7), new Game.Pos(8,8), true);
+        var temp = game.makeMove(takeKingPromote);
+        assertEquals(new Game("1r5Q/4RK1n/7P/8/8/1p6/p7/8 b - - 0 1"), game);
+        game.unMakeMove(takeKingPromote, temp);
+        assertEquals(new Game("1r5k/4RKPn/7P/8/8/1p6/p7/8 w - - 0 1"), game);
+    }
+
 }

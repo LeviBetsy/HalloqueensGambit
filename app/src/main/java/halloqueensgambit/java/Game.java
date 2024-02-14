@@ -194,7 +194,7 @@ public class Game{
         // put the moving piece back where it goes
         this.board.data.put(move.start, movingPiece);
 
-        // check promotions
+        //PROMOTION
         if(move.isPromotion){
             Pawn pawn = new Pawn(this.side);
             this.board.data.put(move.start, pawn);
