@@ -27,15 +27,11 @@ public class App {
             fileName = args[0];
         }
         Game game = IO.readGameFromFile(fileName);
-
         System.out.println(game);
+
         Solver solver = new Solver(game);
-        long start = System.currentTimeMillis();
         int eval = solver.solve(5);
         System.out.println(eval);
-        long end = System.currentTimeMillis();
-        System.out.println("Time elapsed: " +  (end-start));
-        double efficiency = Solver.numPositionsSeen /(end-start);
-        System.out.println("Average positions/second: " + efficiency);
+        System.out.println(solver.bestMove());
     }
 }
