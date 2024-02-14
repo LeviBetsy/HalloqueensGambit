@@ -26,4 +26,9 @@ public class Move{
         int vertical = Math.abs(end.y() - start.y());
         return Math.max(horizontal, vertical);
     }
+
+    @Override
+    public String toString() {
+        return this.start.toString() + this.end.toString();
+    }
 }
