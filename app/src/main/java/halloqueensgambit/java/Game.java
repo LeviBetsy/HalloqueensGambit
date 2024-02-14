@@ -10,6 +10,7 @@ public class Game{
     private Side side;
     private Board board;
     private int evaluation;
+    static char[] letters = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
 
     /*                           SETTERS, GETTERS, CONSTRUCTORS                           */
     public Side side(){
@@ -53,6 +54,11 @@ public class Game{
                 return xComparison;
             }
             return Integer.compare(this.y, other.y);
+        }
+
+        @Override
+        public final String toString() {
+            return letters[x-1] + "" + y;
         }
     }
 
@@ -201,28 +207,23 @@ public class Game{
         if(movingPiece instanceof King){
             // if the king moves more than one space, it must have castled
             if(move.getDistance() > 1){
-                System.out.println("Distance greater than 1, castling must have occurred");
                 // put the white king rook back
                 if(move.end.x() == 7 && move.end.y == 1){
-                    System.out.println("Uncastle white kingside");
                     Piece rook = this.board.data.remove(new Pos(6, 1));
                     this.board.data.put(new Pos(8, 1), rook);
                 }
                 // put the white queen rook back
                 else if(move.end.x() == 3 && move.end.y == 1){
-                    System.out.println("Uncastle white queenside");
                     Piece rook = this.board.data.remove(new Pos(4, 1));
                     this.board.data.put(new Pos(1, 1), rook);
                 }
                 // put the black king rook back
                 else if(move.end.x() == 7 && move.end.y == 8){
-                    System.out.println("Uncastle black kingside");
                     Piece rook = this.board.data.remove(new Pos(6, 8));
                     this.board.data.put(new Pos(8, 8), rook);
                 }
                 // put the black queen rook back
                 else if(move.end.x() == 3 && move.end.y == 8){
-                    System.out.println("Uncastle black queenside");
                     Piece rook = this.board.data.remove(new Pos(4, 8));
                     this.board.data.put(new Pos(1, 8), rook);
                 }
