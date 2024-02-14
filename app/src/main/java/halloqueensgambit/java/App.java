@@ -31,7 +31,8 @@ public class App {
         System.out.println(game);
         Solver solver = new Solver(game);
         long start = System.currentTimeMillis();
-        int eval = solver.solve(5);
+        int eval = solver.solve(3);
+        System.out.println(solver.bestMove());
         System.out.println(eval);
         long end = System.currentTimeMillis();
         System.out.println("Time elapsed: " +  (end-start));

@@ -4,7 +4,7 @@ import halloqueensgambit.java.piece.*;
 
 import java.util.ArrayList;
 import java.util.Optional;
-import java.util.HashMap;
+import java.util.Set;
 
 public class Game{
     private Side side;
@@ -68,6 +68,9 @@ public class Game{
         return board.evaluate();
     }
 
+    //TODO: when in check, can not castle
+//    public Set<Pos> dangerousPos
+//    public Set<Pos> pins??
     public ArrayList<Move> getLegalMoves(){
         ArrayList<Move> legalMoves = new ArrayList<>();
         //iterate through board entries, i.e. pos/piece tuples
