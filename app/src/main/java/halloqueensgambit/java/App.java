@@ -30,7 +30,7 @@ public class App {
         System.out.println(game);
 
         Solver solver = new Solver(game);
-        int eval = solver.solve(5);
+        int eval = solver.solve(1);
         System.out.println(eval);
         System.out.println(solver.bestMove());
     }

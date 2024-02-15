@@ -1,5 +1,6 @@
 package halloqueensgambit.java;
 
+import java.util.List;
 import java.util.Optional;
 import halloqueensgambit.java.Game.Pos;
 
@@ -26,14 +27,21 @@ public class Solver {
     }
 
     public int search(int depth){
-        //If depth reaches 0 or king has been taken: return the game evaluation
-        if (depth == 0 || Math.abs(this.game.evaluation()) > 100){
-            numPositionsSeen ++;
+        List<Move> allLegalMoves = this.game.getLegalMoves();
+        Side currentSide = this.game.side();
+
+        if (allLegalMoves.isEmpty()) {
+            if (this.game.inCheck())
+                return (currentSide == Side.WHITE) ? -10000000 : 1000000;
+            else
+                return 0;
+        }
+
+        if (depth == 0){
             return this.game.evaluation();
         }
 
-        Side currentSide = this.game.side();
-        //TODO: if you have no next moves, check if stalemate, thus eval would be 0 and not these
+
         int eval = (currentSide == Side.WHITE) ? -10000000 : 1000000;
         for(Move m: this.game.getLegalMoves()){
             Optional<Piece> captured = this.game.makeMove(m);
@@ -69,4 +77,6 @@ public class Solver {
         }
         return eval;
     }
+
+
 }

@@ -50,7 +50,7 @@ public class Bishop implements Piece{
         };
 
         for (var o : offsets){
-            RCP.addControlSquares(squares, pos, board, o);
+            RCP.addControlSquares(squares, this.side, pos, board, o);
         }
     }
 }

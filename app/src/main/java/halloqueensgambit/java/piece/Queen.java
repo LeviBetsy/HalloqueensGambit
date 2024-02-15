@@ -45,7 +45,7 @@ public class Queen implements Piece{
     public void addControllingSquares(Set<Pos> squares, Pos pos, Board board) {
 
         for (var o : Game.allOffset){
-            RCP.addControlSquares(squares, pos, board, o);
+            RCP.addControlSquares(squares, this.side, pos, board, o);
         }
     }
 }

@@ -3,6 +3,7 @@ package halloqueensgambit.java;
 import halloqueensgambit.java.piece.*;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class Game{
     private Side side;
@@ -26,6 +27,10 @@ public class Game{
 
     public Pos getCurrentKing(){
         return (this.side == Side.WHITE) ? wKing : bKing;
+    }
+
+    public Pos getEnemyKing() {
+        return (this.side == Side.WHITE) ? bKing : wKing;
     }
 
     public Game(Side side, Board board){
@@ -68,7 +73,7 @@ public class Game{
 
         @Override
         public final String toString() {
-            return letters[x-1] + "" + y;
+            return letters[x-1] + Integer.toString(y);
         }
     }
 
@@ -105,7 +110,11 @@ public class Game{
         return (pos.x() >= 1 && pos.x() <= 8 && pos.y() >= 1 && pos.y() <= 8);
     }
 
-    public Set<Pos> dangerousSquare(){
+    public static boolean inBound(int x, int y){
+        return (x >= 1 && x <= 8 && y >= 1 && y <= 8);
+    }
+
+    public Set<Pos> dangerousSquares(){
         Set<Pos> result = new HashSet<>();
         for (var entry : this.board){
             Piece p = entry.getValue();
@@ -114,6 +123,10 @@ public class Game{
             }
         }
         return result;
+    }
+
+    public boolean inCheck(){
+        return (dangerousSquares().contains(getCurrentKing()));
     }
 
     //TODO: when in check, can not castle
@@ -128,11 +141,29 @@ public class Game{
         }
 
         List<Move> moves = new ArrayList<>();
-        for (var entry : this.board){
-            Piece p = entry.getValue();
-            Pos pos = entry.getKey();
-            if (p.side() == this.side){
-                p.addLegalMoves(moves, pins.get(p), pos, this);
+        //IN CHECK
+        if (dangerousSquares().contains(getCurrentKing())){
+            Optional<Set<Pos>> checkBreakers = getViableCheckBreakers();
+            if (checkBreakers.isPresent()) {
+                for (var entry : this.board) {
+                    Piece p = entry.getValue();
+                    Pos pos = entry.getKey();
+                    if (p.side() == this.side && !(p instanceof King)) {
+                        p.addLegalMoves(moves, pins.get(p), pos, this);
+                    }
+                }
+                //only keeps the move that breaks the check
+                moves = moves.stream().filter(m -> checkBreakers.get().contains(m.end)).collect(Collectors.toList());
+            }
+            King king = (King) this.board.data.get(getCurrentKing());
+            king.addLegalMovesNoCastle(moves, null, getCurrentKing(), this);
+        } else {
+            for (var entry : this.board) {
+                Piece p = entry.getValue();
+                Pos pos = entry.getKey();
+                if (p.side() == this.side) {
+                    p.addLegalMoves(moves, pins.get(p), pos, this);
+                }
             }
         }
         return moves;
@@ -152,6 +183,8 @@ public class Game{
 
     @Override
     public boolean equals(Object obj){
+
+
         if(!(obj instanceof Game)) return false;
         Game other = (Game) obj;
         return this.side.equals(other.side) && this.board.equals(other.board);
@@ -163,6 +196,16 @@ public class Game{
         this.side = Side.opponent(side);
         Piece movingPiece = this.board.data.remove(move.start);
 
+        if (movingPiece instanceof King) {
+            if (movingPiece.side() == Side.WHITE)
+                wKing = move.end;
+            else
+                bKing = move.end;
+        } else if (move.end == wKing)
+            wKing = null;
+        else if (move.end == bKing)
+            bKing = null;
+
         if (movingPiece instanceof King){
             ((King) movingPiece).hasMoved = true;
         } else if (movingPiece instanceof Rook){
@@ -171,14 +214,8 @@ public class Game{
 
         //PROMOTION
         if (movingPiece instanceof Pawn) {
-            if (movingPiece.side() == Side.WHITE && move.end.y() == 8){
-                Queen newQueen = new Queen(Side.WHITE);
-                this.board.data.put(move.end, newQueen);
-                //handling evaluation
-                this.evaluation -= movingPiece.value();
-                this.evaluation += newQueen.value();
-            } else if (movingPiece.side() == Side.BLACK && move.end.y() == 1){
-                Queen newQueen = new Queen(Side.BLACK);
+            if (move.end.y() == 1 || move.end.y() == 8){
+                Queen newQueen = new Queen(movingPiece.side());
                 this.board.data.put(move.end, newQueen);
                 //handling evaluation
                 this.evaluation -= movingPiece.value();
@@ -190,33 +227,20 @@ public class Game{
 
         //CASTLING
         else if (movingPiece instanceof King) {
-            //CASTLING WHITE QUEEN SIDE
-            if (movingPiece.side() == Side.WHITE && move.start.equals(new Pos(5,1) )
-                    && move.end.equals(new Pos(3,1))){
+            int castleY = (movingPiece.side() == Side.WHITE) ? 1 : 8;
+            //CASTLING QUEEN SIDE
+            if (move.start.equals(new Pos(5,castleY))
+                    && move.end.equals(new Pos(3,castleY))){
                 //MOVING THE ROOK
-                this.board.data.remove(new Pos(1,1));
-                this.board.data.put(new Pos(4,1), new Rook(Side.WHITE, true));
+                this.board.data.remove(new Pos(1,castleY));
+                this.board.data.put(new Pos(4,castleY), new Rook(movingPiece.side(), true));
                 this.board.data.put(move.end, movingPiece);
-            //CASTLING WHITE KING SIDE
-            } else if (movingPiece.side() == Side.WHITE && move.start.equals(new Pos(5,1) )
-                    && move.end.equals(new Pos(7,1))){
+            //CASTLING KING SIDE
+            } else if (move.start.equals(new Pos(5, castleY))
+                    && move.end.equals(new Pos(7, castleY))){
                 //MOVING THE ROOK
-                this.board.data.remove(new Pos(8,1));
-                this.board.data.put(new Pos(6,1), new Rook(Side.WHITE, true));
-                this.board.data.put(move.end, movingPiece);
-            //CASTLING BLACK QUEEN SIDE
-            } else if (movingPiece.side() == Side.BLACK && move.start.equals(new Pos(5,8) )
-                    && move.end.equals(new Pos(3,8))){
-                //MOVING THE ROOK
-                this.board.data.remove(new Pos(1,8));
-                this.board.data.put(new Pos(4,8), new Rook(Side.BLACK, true));
-                this.board.data.put(move.end, movingPiece);
-            //CASTLING BLACK KING SIDE
-            } else if (movingPiece.side() == Side.BLACK && move.start.equals(new Pos(5,8) )
-                    && move.end.equals(new Pos(7,8))) {
-                //MOVING THE ROOK
-                this.board.data.remove(new Pos(8, 8));
-                this.board.data.put(new Pos(6, 8), new Rook(Side.BLACK, true));
+                this.board.data.remove(new Pos(8,castleY));
+                this.board.data.put(new Pos(6,castleY), new Rook(movingPiece.side(), true));
                 this.board.data.put(move.end, movingPiece);
             } else {
                 this.board.data.put(move.end, movingPiece);
@@ -232,6 +256,13 @@ public class Game{
     public void unMakeMove(Move move, Optional<Piece> captured){
         this.side = Side.opponent(side);
         Piece movingPiece = this.board.data.remove(move.end);
+
+        if (movingPiece instanceof King){
+            if (movingPiece.side() == Side.WHITE)
+                this.wKing = move.start;
+            else
+                this.bKing = move.start;
+        }
         
         // handle captures AND promotions
         if(captured.isPresent()) {
@@ -255,29 +286,58 @@ public class Game{
         if(movingPiece instanceof King){
             // if the king moves more than one space, it must have castled
             if(move.getDistance() > 1){
-                // put the white king rook back
-                if(move.end.x() == 7 && move.end.y == 1){
-                    Piece rook = this.board.data.remove(new Pos(6, 1));
-                    this.board.data.put(new Pos(8, 1), rook);
+                ((King) movingPiece).hasMoved = false;
+                int castleY = (movingPiece.side() == Side.WHITE) ? 1 : 8;
+                // put the king rook back
+                if(move.end.x() == 7){
+                    Rook rook = (Rook) this.board.data.remove(new Pos(6, castleY));
+                    rook.hasMoved = false;
+                    this.board.data.put(new Pos(8, castleY), rook);
                 }
-                // put the white queen rook back
-                else if(move.end.x() == 3 && move.end.y == 1){
-                    Piece rook = this.board.data.remove(new Pos(4, 1));
-                    this.board.data.put(new Pos(1, 1), rook);
-                }
-                // put the black king rook back
-                else if(move.end.x() == 7 && move.end.y == 8){
-                    Piece rook = this.board.data.remove(new Pos(6, 8));
-                    this.board.data.put(new Pos(8, 8), rook);
-                }
-                // put the black queen rook back
-                else if(move.end.x() == 3 && move.end.y == 8){
-                    Piece rook = this.board.data.remove(new Pos(4, 8));
-                    this.board.data.put(new Pos(1, 8), rook);
+                // put the queen rook back
+                else if(move.end.x() == 3){
+                    Rook rook = (Rook) this.board.data.remove(new Pos(4, castleY));
+                    rook.hasMoved = false;
+                    this.board.data.put(new Pos(1, castleY), rook);
                 }
             }
         }
     }
 
-    //                          HELPER FUNCTIONS
+    //                                  HELPER FUNCTION
+
+    //Return a list of position a non-king piece must take in order to break the check
+    //A valid position might be a blocking or taking of the checking enemy piece
+    //It will return EMPTY if there is a DOUBLE CHECK thus you can not break the check only move king
+    private Optional<Set<Pos>> getViableCheckBreakers(){
+        Set<Pos> result = new HashSet<>();
+        for (var entry : this.board){
+            Piece p = entry.getValue();
+            Pos pos = entry.getKey();
+            //loops through all enemy pieces to find the one checking our king
+            if (p.side() == Side.opponent(this.side)){
+                Set<Pos> controlledSquares = new HashSet<>();
+                p.addControllingSquares(controlledSquares, pos, this.board);
+                if (controlledSquares.contains(getCurrentKing())){
+                    //if there is another check found previously then this is a double check
+                    if (!result.isEmpty()){
+                        return  Optional.empty();
+                    } else {
+                        if (p instanceof Rook || p instanceof Bishop || p instanceof Queen){
+                            RCP.addCheckedPath(result, pos, this.board, findOffSet(pos, getCurrentKing()));
+                        }
+                        //taking of the checking piece is also a viable check breaker
+                        result.add(pos);
+                    }
+                }
+            }
+        }
+        return Optional.of(result);
+    }
+
+    private OffSet findOffSet(Pos start, Pos end){
+        int dx = (end.x - start.x == 0) ? 0 : (end.x - start.x)/Math.abs(end.x- start.x);
+        int dy = (end.y - start.y == 0) ? 0 : (end.y - start.y)/Math.abs(end.y- start.y);
+        return new OffSet(dx, dy);
+    }
 }

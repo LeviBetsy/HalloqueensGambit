@@ -40,7 +40,7 @@ public class King implements Piece{
     @Override
     public void addLegalMoves(List<Move> moves, Set<Pos> pinnedPath, Pos pos, Game game){
         Board board = game.board();
-        Set<Pos> dangerousSquares = game.dangerousSquare();
+        Set<Pos> dangerousSquares = game.dangerousSquares();
         for (Pos nextPos : kingSquares(pos)){
             //can only move to empty square or enemy square
             //the square you're going to must not be dangerous
@@ -61,6 +61,18 @@ public class King implements Piece{
         }
     }
 
+    public void addLegalMovesNoCastle(List<Move> moves, Set<Pos> pinnedPath, Pos pos, Game game) {
+        Board board = game.board();
+        Set<Pos> dangerousSquares = game.dangerousSquares();
+        for (Pos nextPos : kingSquares(pos)) {
+            //can only move to empty square or enemy square
+            //the square you're going to must not be dangerous
+            if (board.notAlly(nextPos, this.side) && !dangerousSquares.contains(nextPos)) {
+                moves.add(new Move(pos, nextPos));
+            }
+        }
+    }
+
     @Override
     public void addControllingSquares(Set<Pos> squares, Pos pos, Board board) {
         squares.addAll(kingSquares(pos));
@@ -68,14 +80,14 @@ public class King implements Piece{
 
     private List<Pos> kingSquares(Pos pos){
         Pos[] nextPos = {
-                new Pos(pos.x() + 1, pos.y() + 2),
-                new Pos(pos.x() + 1, pos.y() - 2),
-                new Pos(pos.x() - 1, pos.y() + 2),
-                new Pos(pos.x() - 1, pos.y() - 2),
-                new Pos(pos.x() + 2, pos.y() + 1),
-                new Pos(pos.x() + 2, pos.y() - 1),
-                new Pos(pos.x() - 2, pos.y() + 1),
-                new Pos(pos.x() - 2, pos.y() - 1)
+                new Pos(pos.x() + 1, pos.y() + 1),
+                new Pos(pos.x() + 1, pos.y() ),
+                new Pos(pos.x() + 1, pos.y() -1),
+                new Pos(pos.x() , pos.y() + 1),
+                new Pos(pos.x() , pos.y() - 1),
+                new Pos(pos.x() - 1, pos.y() + 1),
+                new Pos(pos.x() - 1, pos.y()),
+                new Pos(pos.x() - 1, pos.y() - 1)
         };
         return Arrays.stream(nextPos).filter(Game::inBound).collect(Collectors.toList());
     }

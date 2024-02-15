@@ -37,16 +37,31 @@ public class RCP {
 
     //add onto a set, the squares you are controlling if you follow this offset
     //path is blocked by any piece and always includes the last square
-    public static void addControlSquares(Set<Pos> set, Pos pos, Board board, Game.OffSet o){
+    public static void addControlSquares(Set<Pos> set, Side side, Pos pos, Board board, Game.OffSet o){
         Pos nextPos = new Pos(pos.x() + o.dx(), pos.y() + o.dy());
         if (Game.inBound(nextPos)){
             Optional<Piece> currentSq = board.lookup(nextPos);
             if (currentSq.isEmpty()){
                 set.add(nextPos);
-                addControlSquares(set, nextPos, board, o);
+                addControlSquares(set, side, nextPos, board, o);
             } else {
                 set.add(nextPos);
+                //if the blocking piece is enemy king
+                //then you are also controlling the square directly after the king (so king cant move there)
+                if (currentSq.get().side() != side && currentSq.get() instanceof King
+                        && Game.inBound(nextPos.x() + o.dx(), nextPos.y() + o.dy())){
+                    set.add(new Pos(nextPos.x() + o.dx(), nextPos.y() + o.dy()));
+                }
             }
+        }
+    }
+
+    //Adds to the set the path between the piece and the King
+    public static void addCheckedPath(Set<Pos> set, Pos pos, Board board, Game.OffSet o){
+        Pos nextPos = new Pos(pos.x() + o.dx(), pos.y() + o.dy());
+        if (board.lookup(nextPos).isEmpty()){
+            set.add(nextPos);
+            addCheckedPath(set, nextPos, board, o);
         }
     }
 
