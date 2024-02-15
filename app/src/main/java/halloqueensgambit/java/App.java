@@ -3,6 +3,7 @@
  */
 package halloqueensgambit.java;
 
+import java.awt.font.GlyphMetrics;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -29,9 +30,11 @@ public class App {
         Game game = IO.readGameFromFile(fileName);
         System.out.println(game);
 
-        Solver solver = new Solver(game);
-        int eval = solver.solve(3);
+        Solver solver = new Solver(game, 5);
+
+        int eval = solver.alphaBetaSearch(5, Integer.MIN_VALUE, Integer.MAX_VALUE);
         System.out.println(eval);
         System.out.println(solver.bestMove());
+//        System.out.println(Solver.numPositionsSeen);
     }
 }
