@@ -2,13 +2,15 @@ package halloqueensgambit.java;
 
 import halloqueensgambit.java.piece.*;
 
-import java.util.ArrayList;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class Game{
     private Side side;
     private Board board;
+
+    //TODO: update king positions every time you make Move and unmakeMove
+    private Pos wKing;
+    private Pos bKing;
     private int evaluation;
     static char[] letters = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
 
@@ -22,10 +24,16 @@ public class Game{
         return this.board;
     }
 
+    public Pos getCurrentKing(){
+        return (this.side == Side.WHITE) ? wKing : bKing;
+    }
+
     public Game(Side side, Board board){
         this.side = side;
         this.board = board;
         this.evaluation = board.evaluate();
+        this.wKing = board.findKing(Side.WHITE);
+        this.bKing = board.findKing(Side.BLACK);
     }
 
     // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
@@ -41,6 +49,8 @@ public class Game{
         }
 
         this.evaluation = board.evaluate();
+        this.wKing = board.findKing(Side.WHITE);
+        this.bKing = board.findKing(Side.BLACK);
     }
     
 
@@ -64,30 +74,68 @@ public class Game{
 
     public static record OffSet(int dx, int dy){};
 
+    public static final OffSet[] allOffset = {
+            new Game.OffSet(0, 1),
+            new Game.OffSet(0, -1),
+            new Game.OffSet(1, 0),
+            new Game.OffSet(-1, 0),
+            new Game.OffSet(1, 1),
+            new Game.OffSet(1, -1),
+            new Game.OffSet(-1, 1),
+            new Game.OffSet(-1, -1)
+    };
+
+    public static final OffSet[] diagonalOffset = {
+            new Game.OffSet(1, 1),
+            new Game.OffSet(1, -1),
+            new Game.OffSet(-1, 1),
+            new Game.OffSet(-1, -1)
+    };
+
+    public static final OffSet[] straightOffset = {
+            new Game.OffSet(0, 1),
+            new Game.OffSet(0, -1),
+            new Game.OffSet(1, 0),
+            new Game.OffSet(-1, 0)
+    };
+
     /*                                METHODS                                */
 
     public static boolean inBound(Game.Pos pos){
         return (pos.x() >= 1 && pos.x() <= 8 && pos.y() >= 1 && pos.y() <= 8);
     }
 
-    public int evaluateBoard(){
-        return board.evaluate();
+    public Set<Pos> dangerousSquare(){
+        Set<Pos> result = new HashSet<>();
+        for (var entry : this.board){
+            Piece p = entry.getValue();
+            if (p.side() == Side.opponent(this.side)){
+                p.addControllingSquares(result, entry.getKey(), this.board);
+            }
+        }
+        return result;
     }
 
     //TODO: when in check, can not castle
-//    public Set<Pos> dangerousPos
-//    public Set<Pos> pins??
-    public ArrayList<Move> getLegalMoves(){
-        ArrayList<Move> legalMoves = new ArrayList<>();
-        //iterate through board entries, i.e. pos/piece tuples
-        for(var entry: this.board){ 
-            if(entry.getValue().side() == this.side){
-                // get the moves for this piece and add to the big arraylist
-                ArrayList<Move> movesForThisPiece = entry.getValue().allLegalMove(entry.getKey(), this.board); // ugly af
-                legalMoves.addAll(movesForThisPiece);
+    public List<Move> getLegalMoves(){
+        //first, find out what's being pinned
+        Map<Piece, Set<Pos>> pins = new HashMap<>();
+        for (var o : diagonalOffset){
+            RCP.pinningPath(true, pins, new HashSet<>(), this, Optional.empty(), getCurrentKing(), o);
+        }
+        for (var o : straightOffset){
+            RCP.pinningPath(false, pins, new HashSet<>(), this, Optional.empty(), getCurrentKing(), o);
+        }
+
+        List<Move> moves = new ArrayList<>();
+        for (var entry : this.board){
+            Piece p = entry.getValue();
+            Pos pos = entry.getKey();
+            if (p.side() == this.side){
+                p.addLegalMoves(moves, pins.get(p), pos, this);
             }
         }
-        return legalMoves;
+        return moves;
     }
 
     public Game copy(){
@@ -230,4 +278,6 @@ public class Game{
             }
         }
     }
+
+    //                          HELPER FUNCTIONS
 }

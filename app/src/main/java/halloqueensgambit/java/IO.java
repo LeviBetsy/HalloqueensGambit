@@ -34,23 +34,23 @@ public class IO {
         return new Move(startPos, endPos);
     }
 
-    public static Game playerMove(Game game, Scanner scanner){
-        ArrayList<Move> gameLegalMoves = game.getLegalMoves();
-
-        Move userMove;
-        while (true) {
-            String userInput = scanner.nextLine();
-            userMove = scanMove(userInput);
-            if (!gameLegalMoves.contains(userMove)){
-                System.out.println("Move is not valid, please retry");
-            } else {
-                break;
-            }
-        }
-        game.makeMove(userMove);
-        return game;
-        //scanner.close(
-    }
+//    public static Game playerMove(Game game, Scanner scanner){
+//        ArrayList<Move> gameLegalMoves = game.getLegalMoves();
+//
+//        Move userMove;
+//        while (true) {
+//            String userInput = scanner.nextLine();
+//            userMove = scanMove(userInput);
+//            if (!gameLegalMoves.contains(userMove)){
+//                System.out.println("Move is not valid, please retry");
+//            } else {
+//                break;
+//            }
+//        }
+//        game.makeMove(userMove);
+//        return game;
+//        //scanner.close(
+//    }
 
     //constructor for creating game from file name
     //file must be inside of games folder

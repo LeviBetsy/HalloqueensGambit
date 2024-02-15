@@ -10,14 +10,14 @@ public class App {
     public String getGreeting() {
         return "a";
     }
-    public void twoPlayer(Game game) {
-        Game newGame = game;
-        // TODO: this is lazy
-        while (true) {
-            System.out.println(newGame);
-            newGame = IO.playerMove(newGame, new Scanner(System.in));
-        }
-    }
+//    public void twoPlayer(Game game) {
+//        Game newGame = game;
+//        // TODO: this is lazy
+//        while (true) {
+//            System.out.println(newGame);
+//            newGame = IO.playerMove(newGame, new Scanner(System.in));
+//        }
+//    }
 
     public static void main(String[] args) throws IOException {
         String fileName;

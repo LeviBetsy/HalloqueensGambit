@@ -6,6 +6,7 @@ package halloqueensgambit.java;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -17,7 +18,7 @@ class MoveTesting {
         String fileName = "/bestmove/a.txt";
         Game game = IO.readGameFromFile(fileName);
 
-        ArrayList<Move> moves = game.getLegalMoves();
+        List<Move> moves = game.getLegalMoves();
         
         Game tmp = IO.readGameFromFile(fileName);
         assertEquals(game.board(), tmp.board());
@@ -36,8 +37,8 @@ class MoveTesting {
         Game black = new Game("r3k2r/pbp2pp1/1p3q1p/2n1p3/8/P2B1N2/1PP1QPPP/R3K2R b KQkq - 0 14");
         Game black_copy = new Game("r3k2r/pbp2pp1/1p3q1p/2n1p3/8/P2B1N2/1PP1QPPP/R3K2R b KQkq - 0 14");
 
-        ArrayList<Move> white_moves = white.getLegalMoves();
-        ArrayList<Move> black_moves = black.getLegalMoves();
+        List<Move> white_moves = white.getLegalMoves();
+        List<Move> black_moves = black.getLegalMoves();
 
         for(Move m: white_moves){
             Optional<Piece> captured = white_copy.makeMove(m);
@@ -61,8 +62,8 @@ class MoveTesting {
         Game black = new Game("8/4PPPP/6K1/8/8/1k6/pppp4/8 b - - 0 1");
         Game black_copy = new Game("8/4PPPP/6K1/8/8/1k6/pppp4/8 b - - 0 1");
 
-        ArrayList<Move> white_moves = white.getLegalMoves();
-        ArrayList<Move> black_moves = black.getLegalMoves();
+        List<Move> white_moves = white.getLegalMoves();
+        List<Move> black_moves = black.getLegalMoves();
 
         for(Move m: white_moves){
             Optional<Piece> captured = white_copy.makeMove(m);
