@@ -26,7 +26,7 @@ public class Knight implements Piece{
 
     @Override
     public int value() {
-        return 3*side.rateMult;
+        return Game.knightValue*side.rateMult;
     }
 
     @Override

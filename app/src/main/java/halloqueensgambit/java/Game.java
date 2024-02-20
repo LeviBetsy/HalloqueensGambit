@@ -8,10 +8,8 @@ import java.util.stream.Collectors;
 public class Game{
     private Side side;
     private Board board;
-
-    //TODO: update king positions every time you make Move and unmakeMove
-    private Pos wKing;
-    private Pos bKing;
+    private Pos wKingPos;
+    private Pos bKingPos;
     private int evaluation;
     static char[] letters = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'};
 
@@ -25,20 +23,16 @@ public class Game{
         return this.board;
     }
 
-    public Pos getCurrentKing(){
-        return (this.side == Side.WHITE) ? wKing : bKing;
+    public Pos getCurrentKingPos(){
+        return (this.side == Side.WHITE) ? wKingPos : bKingPos;
     }
-
-    public Pos getEnemyKing() {
-        return (this.side == Side.WHITE) ? bKing : wKing;
-    }
-
+    
     public Game(Side side, Board board){
         this.side = side;
         this.board = board;
         this.evaluation = board.evaluate();
-        this.wKing = board.findKing(Side.WHITE);
-        this.bKing = board.findKing(Side.BLACK);
+        this.wKingPos = board.findKing(Side.WHITE);
+        this.bKingPos = board.findKing(Side.BLACK);
     }
 
     // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
@@ -54,8 +48,8 @@ public class Game{
         }
 
         this.evaluation = board.evaluate();
-        this.wKing = board.findKing(Side.WHITE);
-        this.bKing = board.findKing(Side.BLACK);
+        this.wKingPos = board.findKing(Side.WHITE);
+        this.bKingPos = board.findKing(Side.BLACK);
     }
     
 
@@ -79,6 +73,12 @@ public class Game{
 
     public static record OffSet(int dx, int dy){};
 
+    public static final int kingValue = 1000000;
+    public static final int pawnValue = 100;
+    public static final int queenValue = 900;
+    public static final int knightValue = 300;
+    public static final int rookValue = 500;
+    public static final int bishopValue = 300;
     public static final OffSet[] allOffset = {
             new Game.OffSet(0, 1),
             new Game.OffSet(0, -1),
@@ -114,6 +114,7 @@ public class Game{
         return (x >= 1 && x <= 8 && y >= 1 && y <= 8);
     }
 
+    //return a set of all the squares being controlled by the enemy
     public Set<Pos> dangerousSquares(){
         Set<Pos> result = new HashSet<>();
         for (var entry : this.board){
@@ -126,24 +127,24 @@ public class Game{
     }
 
     public boolean inCheck(){
-        return (dangerousSquares().contains(getCurrentKing()));
+        return (dangerousSquares().contains(getCurrentKingPos()));
     }
 
-    //TODO: when in check, can not castle
     public List<Move> getLegalMoves(){
         //first, find out what's being pinned
         Map<Piece, Set<Pos>> pins = new HashMap<>();
         for (var o : diagonalOffset){
-            RCP.pinningPath(true, pins, new HashSet<>(), this, Optional.empty(), getCurrentKing(), o);
+            RCP.pinningPath(true, pins, new HashSet<>(), this, Optional.empty(), getCurrentKingPos(), o);
         }
         for (var o : straightOffset){
-            RCP.pinningPath(false, pins, new HashSet<>(), this, Optional.empty(), getCurrentKing(), o);
+            RCP.pinningPath(false, pins, new HashSet<>(), this, Optional.empty(), getCurrentKingPos(), o);
         }
 
         List<Move> moves = new ArrayList<>();
         //IN CHECK
-        if (dangerousSquares().contains(getCurrentKing())){
+        if (dangerousSquares().contains(getCurrentKingPos())){
             Optional<Set<Pos>> checkBreakers = getViableCheckBreakers();
+            //if there is a change to break check with other pieces
             if (checkBreakers.isPresent()) {
                 for (var entry : this.board) {
                     Piece p = entry.getValue();
@@ -155,8 +156,8 @@ public class Game{
                 //only keeps the move that breaks the check
                 moves = moves.stream().filter(m -> checkBreakers.get().contains(m.end)).collect(Collectors.toList());
             }
-            King king = (King) this.board.data.get(getCurrentKing());
-            king.addLegalMovesNoCastle(moves, null, getCurrentKing(), this);
+            King king = (King) this.board.data.get(getCurrentKingPos());
+            king.addLegalMovesNoCastle(moves, getCurrentKingPos(), this);
         } else {
             for (var entry : this.board) {
                 Piece p = entry.getValue();
@@ -169,10 +170,6 @@ public class Game{
         return moves;
     }
 
-    public Game copy(){
-        return new Game(this.side, this.board);
-    }
-
     @Override
     public String toString(){
         String result = "";
@@ -183,8 +180,6 @@ public class Game{
 
     @Override
     public boolean equals(Object obj){
-
-
         if(!(obj instanceof Game)) return false;
         Game other = (Game) obj;
         return this.side.equals(other.side) && this.board.equals(other.board);
@@ -192,39 +187,31 @@ public class Game{
 
     public Optional<Piece> makeMove(Move move){
         Optional<Piece> captured = this.board.lookup(move.end);
-
-        this.side = Side.opponent(side);
         Piece movingPiece = this.board.data.remove(move.start);
 
+        this.side = Side.opponent(side);
+        //moving king
         if (movingPiece instanceof King) {
             if (movingPiece.side() == Side.WHITE)
-                wKing = move.end;
+                wKingPos = move.end;
             else
-                bKing = move.end;
-        } else if (move.end == wKing)
-            wKing = null;
-        else if (move.end == bKing)
-            bKing = null;
-
-        if (movingPiece instanceof King){
+                bKingPos = move.end;
             ((King) movingPiece).hasMoved = true;
-        } else if (movingPiece instanceof Rook){
+        }
+
+        if (movingPiece instanceof Rook){
             ((Rook) movingPiece).hasMoved = true;
         }
 
         //PROMOTION
-        if (movingPiece instanceof Pawn) {
-            if (move.end.y() == 1 || move.end.y() == 8){
-                Queen newQueen = new Queen(movingPiece.side());
-                this.board.data.put(move.end, newQueen);
-                //handling evaluation
-                this.evaluation -= movingPiece.value();
-                this.evaluation += newQueen.value();
-            } else {
-                this.board.data.put(move.end, movingPiece);
-            }
-        } 
+        if (move.isPromotion) {
+            Queen newQueen = new Queen(movingPiece.side());
+            this.board.data.put(move.end, newQueen);
+            //handling evaluation
+            this.evaluation -= movingPiece.value();
+            this.evaluation += newQueen.value();
 
+        }
         //CASTLING
         else if (movingPiece instanceof King) {
             int castleY = (movingPiece.side() == Side.WHITE) ? 1 : 8;
@@ -249,6 +236,7 @@ public class Game{
             this.board.data.put(move.end, movingPiece);
         }
 
+        //remove the captured piece value from the evaluation
         captured.ifPresent(piece -> this.evaluation -= piece.value());
         return captured;
     }
@@ -259,9 +247,9 @@ public class Game{
 
         if (movingPiece instanceof King){
             if (movingPiece.side() == Side.WHITE)
-                this.wKing = move.start;
+                this.wKingPos = move.start;
             else
-                this.bKing = move.start;
+                this.bKingPos = move.start;
         }
         
         // handle captures AND promotions
@@ -281,9 +269,8 @@ public class Game{
             this.evaluation += pawn.value();
             this.evaluation -= movingPiece.value();
         }
-
-        // check castles
-        if(movingPiece instanceof King){
+        //CHECK CASTLES
+        else if(movingPiece instanceof King){
             // if the king moves more than one space, it must have castled
             if(move.getDistance() > 1){
                 ((King) movingPiece).hasMoved = false;
@@ -318,13 +305,13 @@ public class Game{
             if (p.side() == Side.opponent(this.side)){
                 Set<Pos> controlledSquares = new HashSet<>();
                 p.addControllingSquares(controlledSquares, pos, this.board);
-                if (controlledSquares.contains(getCurrentKing())){
+                if (controlledSquares.contains(getCurrentKingPos())){
                     //if there is another check found previously then this is a double check
                     if (!result.isEmpty()){
-                        return  Optional.empty();
+                        return Optional.empty();
                     } else {
                         if (p instanceof Rook || p instanceof Bishop || p instanceof Queen){
-                            RCP.addCheckedPath(result, pos, this.board, findOffSet(pos, getCurrentKing()));
+                            RCP.addCheckedPath(result, pos, this.board, findOffSet(pos, getCurrentKingPos()));
                         }
                         //taking of the checking piece is also a viable check breaker
                         result.add(pos);

@@ -23,7 +23,7 @@ public class Bishop implements Piece{
 
     @Override
     public int value() {
-        return 3*side.rateMult;
+        return Game.bishopValue*side.rateMult;
     }
 
     @Override

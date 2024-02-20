@@ -24,7 +24,7 @@ public class Queen implements Piece{
 
     @Override
     public int value() {
-        return 9*side.rateMult;
+        return Game.queenValue*side.rateMult;
     }
 
     @Override

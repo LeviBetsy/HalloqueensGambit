@@ -26,7 +26,7 @@ public class Pawn implements Piece{
 
     @Override
     public int value() {
-        return side.rateMult;
+        return Game.pawnValue*side.rateMult;
     }
 
     @Override

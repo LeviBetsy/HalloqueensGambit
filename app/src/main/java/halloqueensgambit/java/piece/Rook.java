@@ -26,7 +26,7 @@ public class Rook implements Piece {
 
     @Override
     public int value() {
-        return 5*side.rateMult;
+        return Game.rookValue*side.rateMult;
     }
 
     @Override

@@ -25,7 +25,7 @@ public class King implements Piece{
 
     @Override
     public int value() {
-        return 100000*side.rateMult;
+        return Game.kingValue*side.rateMult;
     }
 
     @Override
@@ -61,7 +61,7 @@ public class King implements Piece{
         }
     }
 
-    public void addLegalMovesNoCastle(List<Move> moves, Set<Pos> pinnedPath, Pos pos, Game game) {
+    public void addLegalMovesNoCastle(List<Move> moves, Pos pos, Game game) {
         Board board = game.board();
         Set<Pos> dangerousSquares = game.dangerousSquares();
         for (Pos nextPos : kingSquares(pos)) {
