@@ -36,8 +36,8 @@ public class Game {
         this.side = side;
         this.board = board;
         this.evaluation = board.evaluate();
-        this.wKing = board.findKing(Side.WHITE);
-        this.bKing = board.findKing(Side.BLACK);
+        this.wKingPos = board.findKing(Side.WHITE);
+        this.bKingPos = board.findKing(Side.BLACK);
         this.zobristNumbers = new long[769];
         for (int i = 0; i < 769; i++) {
             zobristNumbers[i] = (long) (Math.random() * Math.pow(2, 64) - 1);
