@@ -5,7 +5,6 @@ import halloqueensgambit.java.Game.Pos;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -34,23 +33,23 @@ public class IO {
         return new Move(startPos, endPos);
     }
 
-    public static Game playerMove(Game game, Scanner scanner){
-        ArrayList<Move> gameLegalMoves = game.getLegalMoves();
-
-        Move userMove;
-        while (true) {
-            String userInput = scanner.nextLine();
-            userMove = scanMove(userInput);
-            if (!gameLegalMoves.contains(userMove)){
-                System.out.println("Move is not valid, please retry");
-            } else {
-                break;
-            }
-        }
-        game.makeMove(userMove);
-        return game;
-        //scanner.close(
-    }
+//    public static Game playerMove(Game game, Scanner scanner){
+//        ArrayList<Move> gameLegalMoves = game.getLegalMoves();
+//
+//        Move userMove;
+//        while (true) {
+//            String userInput = scanner.nextLine();
+//            userMove = scanMove(userInput);
+//            if (!gameLegalMoves.contains(userMove)){
+//                System.out.println("Move is not valid, please retry");
+//            } else {
+//                break;
+//            }
+//        }
+//        game.makeMove(userMove);
+//        return game;
+//        //scanner.close(
+//    }
 
     //constructor for creating game from file name
     //file must be inside of games folder

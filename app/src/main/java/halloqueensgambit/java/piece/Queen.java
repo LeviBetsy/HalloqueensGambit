@@ -7,6 +7,8 @@ import halloqueensgambit.java.Side;
 import halloqueensgambit.java.Move;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Queen implements Piece{
@@ -22,7 +24,7 @@ public class Queen implements Piece{
 
     @Override
     public int value() {
-        return 9*side.rateMult;
+        return Game.queenValue*side.rateMult;
     }
 
     @Override
@@ -34,26 +36,16 @@ public class Queen implements Piece{
     }
 
     @Override
-    public ArrayList<Move> allLegalMove(Pos pos, Board board){
-        ArrayList<Pos> legalPos = new ArrayList<>();
-        Game.OffSet[] offsets = {
-            new Game.OffSet(1, 1),
-            new Game.OffSet(1, -1),
-            new Game.OffSet(-1, 1),
-            new Game.OffSet(-1, -1),
-            new Game.OffSet(0, 1),
-            new Game.OffSet(0, -1),
-            new Game.OffSet(1, 0),
-            new Game.OffSet(-1, 0)
-        };
+    public void addLegalMoves(List<Move> moves, Set<Pos> pinnedPath, Pos pos, Game game){
+        for (Game.OffSet o : Game.allOffset)
+            RCP.recurAddMove(moves, pinnedPath, game.board(), this.side, pos, pos, o);
+    }
 
-        for (Game.OffSet offset : offsets) {
-            legalPos = RCP.RecurCheckPath(legalPos, board, this.side, pos, offset);
+    @Override
+    public void addControllingSquares(Set<Pos> squares, Pos pos, Board board) {
+
+        for (var o : Game.allOffset){
+            RCP.addControlSquares(squares, this.side, pos, board, o);
         }
-
-        ArrayList<Move> result = legalPos.stream()
-                .map(end -> new Move(pos, end)) // Modify each element as needed
-                .collect(Collectors.toCollection(ArrayList::new));
-        return result;
     }
 }

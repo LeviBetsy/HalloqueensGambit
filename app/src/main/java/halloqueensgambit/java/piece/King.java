@@ -4,8 +4,7 @@ import halloqueensgambit.java.Board;
 import halloqueensgambit.java.Game;
 import halloqueensgambit.java.Side;
 
-import java.util.ArrayList;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import halloqueensgambit.java.Game.Pos;
 import halloqueensgambit.java.Move;
@@ -26,7 +25,7 @@ public class King implements Piece{
 
     @Override
     public int value() {
-        return 100000*side.rateMult;
+        return Game.kingValue*side.rateMult;
     }
 
     @Override
@@ -37,45 +36,63 @@ public class King implements Piece{
             return " ♔ ";
     }
 
+    //we can't really be pinned as a king so pinnedPath will always be null
     @Override
-    public ArrayList<Move> allLegalMove(Pos pos, Board board){
-        ArrayList<Pos> legalPos = new ArrayList<>();
+    public void addLegalMoves(List<Move> moves, Set<Pos> pinnedPath, Pos pos, Game game){
+        Board board = game.board();
+        Set<Pos> dangerousSquares = game.dangerousSquares();
+        for (Pos nextPos : kingSquares(pos)){
+            //can only move to empty square or enemy square
+            //the square you're going to must not be dangerous
+            if (board.notAlly(nextPos, this.side) && !dangerousSquares.contains(nextPos)){
+                moves.add(new Move(pos, nextPos));
+            }
+        }
+
+        //CASTLING
+        int y = (this.side == Side.WHITE) ? 1 : 8;
+        if (!this.hasMoved && pos.equals(new Pos(5, y))) {
+            Pos lCastlePos = new Pos(3, y);
+            if (rookCanCastle(new Pos(1, y), pos, board) && !dangerousSquares.contains(lCastlePos))
+                moves.add(new Move(pos, lCastlePos));
+            Pos rCastlePos = new Pos(7, y);
+            if (rookCanCastle(new Pos(8,y), pos, board) && !dangerousSquares.contains(rCastlePos))
+                moves.add(new Move(pos, rCastlePos));
+        }
+    }
+
+    public void addLegalMovesNoCastle(List<Move> moves, Pos pos, Game game) {
+        Board board = game.board();
+        Set<Pos> dangerousSquares = game.dangerousSquares();
+        for (Pos nextPos : kingSquares(pos)) {
+            //can only move to empty square or enemy square
+            //the square you're going to must not be dangerous
+            if (board.notAlly(nextPos, this.side) && !dangerousSquares.contains(nextPos)) {
+                moves.add(new Move(pos, nextPos));
+            }
+        }
+    }
+
+    @Override
+    public void addControllingSquares(Set<Pos> squares, Pos pos, Board board) {
+        squares.addAll(kingSquares(pos));
+    }
+
+    private List<Pos> kingSquares(Pos pos){
         Pos[] nextPos = {
                 new Pos(pos.x() + 1, pos.y() + 1),
-                new Pos(pos.x() + 1, pos.y()),
-                new Pos(pos.x() + 1, pos.y() - 1),
-                new Pos(pos.x(), pos.y() + 1),
-                new Pos(pos.x(), pos.y() - 1),
+                new Pos(pos.x() + 1, pos.y() ),
+                new Pos(pos.x() + 1, pos.y() -1),
+                new Pos(pos.x() , pos.y() + 1),
+                new Pos(pos.x() , pos.y() - 1),
                 new Pos(pos.x() - 1, pos.y() + 1),
                 new Pos(pos.x() - 1, pos.y()),
                 new Pos(pos.x() - 1, pos.y() - 1)
         };
-        for (Pos end : nextPos) {
-            if (Game.inBound(end) && board.notAlly(end, this.side))
-                legalPos.add(end);
-        }
-
-        //convert all legal positions into legalMoves
-        ArrayList<Move> result = legalPos.stream()
-                .map(end -> new Move(pos, end))
-                .collect(Collectors.toCollection(ArrayList::new));
-
-        //CASTLING
-        if (!this.hasMoved) {
-            if (this.side == Side.WHITE && pos.equals(new Pos(5, 1))){
-                if (rookCanCastle(new Pos(1, 1), pos, board))
-                    result.add(new Move(pos, new Pos(3, 1)));
-                if (rookCanCastle(new Pos(8,1), pos, board))
-                    result.add(new Move(pos, new Pos(7, 1)));
-            } else if (this.side == Side.BLACK && pos.equals(new Pos(5, 8))){
-                if (rookCanCastle(new Pos(1, 8), pos, board))
-                    result.add(new Move(pos, new Pos(3, 8)));
-                if (rookCanCastle(new Pos(8,8), pos, board))
-                    result.add(new Move(pos, new Pos(7, 8)));
-            }
-        }
-        return result;
+        return Arrays.stream(nextPos).filter(Game::inBound).collect(Collectors.toList());
     }
+
+    //                           HELPER FUNCTIONS
     //returns true if it is valid to castle with the rook and the rook exists
     private boolean rookCanCastle(Pos rookPos, Pos kingPos, Board board){
         Optional<Piece> rook = board.lookup(rookPos.x(), rookPos.y());

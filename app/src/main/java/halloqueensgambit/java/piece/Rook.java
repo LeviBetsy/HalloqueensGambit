@@ -2,6 +2,9 @@ package halloqueensgambit.java.piece;
 import halloqueensgambit.java.Board;
 import halloqueensgambit.java.Game;
 import halloqueensgambit.java.Side;
+
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import halloqueensgambit.java.Game.Pos;
 import halloqueensgambit.java.Move;
@@ -23,7 +26,7 @@ public class Rook implements Piece {
 
     @Override
     public int value() {
-        return 5*side.rateMult;
+        return Game.rookValue*side.rateMult;
     }
 
     @Override
@@ -35,8 +38,13 @@ public class Rook implements Piece {
     }
 
     @Override
-    public ArrayList<Move> allLegalMove(Pos pos, Board board){
-        ArrayList<Pos> legalPos = new ArrayList<>();
+    public void addLegalMoves(List<Move> moves, Set<Pos> pinnedPath, Pos pos, Game game) {
+        for (Game.OffSet o : Game.straightOffset)
+            RCP.recurAddMove(moves, pinnedPath, game.board(), this.side, pos, pos, o);
+    }
+
+    @Override
+    public void addControllingSquares(Set<Pos> squares, Pos pos, Board board){
         Game.OffSet[] offsets = {
                 new Game.OffSet(0, 1),
                 new Game.OffSet(0, -1),
@@ -44,13 +52,8 @@ public class Rook implements Piece {
                 new Game.OffSet(-1, 0)
         };
 
-        for (Game.OffSet offset : offsets) {
-            legalPos = RCP.RecurCheckPath(legalPos, board, this.side, pos, offset);
+        for (var o : offsets){
+            RCP.addControlSquares(squares, this.side, pos, board, o);
         }
-
-        return legalPos.stream()
-                .map(end -> new Move(pos, end)) // Modify each element as needed
-                .collect(Collectors.toCollection(ArrayList::new));
     }
-
 }

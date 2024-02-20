@@ -5,8 +5,7 @@ package halloqueensgambit.java;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.ArrayList;
-import java.util.Optional;
+import java.util.*;
 
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +16,7 @@ class MoveTesting {
         String fileName = "/bestmove/a.txt";
         Game game = IO.readGameFromFile(fileName);
 
-        ArrayList<Move> moves = game.getLegalMoves();
+        List<Move> moves = game.getLegalMoves();
         
         Game tmp = IO.readGameFromFile(fileName);
         assertEquals(game.board(), tmp.board());
@@ -36,20 +35,20 @@ class MoveTesting {
         Game black = new Game("r3k2r/pbp2pp1/1p3q1p/2n1p3/8/P2B1N2/1PP1QPPP/R3K2R b KQkq - 0 14");
         Game black_copy = new Game("r3k2r/pbp2pp1/1p3q1p/2n1p3/8/P2B1N2/1PP1QPPP/R3K2R b KQkq - 0 14");
 
-        ArrayList<Move> white_moves = white.getLegalMoves();
-        ArrayList<Move> black_moves = black.getLegalMoves();
+        List<Move> white_moves = white.getLegalMoves();
+        List<Move> black_moves = black.getLegalMoves();
 
         for(Move m: white_moves){
             Optional<Piece> captured = white_copy.makeMove(m);
             white_copy.unMakeMove(m, captured);
-            System.out.println(m.start + " " + m.end + " ");
+//            System.out.println(m.start + " " + m.end + " ");
             assertEquals(white, white_copy);
         }
 
         for(Move m: black_moves){
             Optional<Piece> captured = black_copy.makeMove(m);
             black_copy.unMakeMove(m, captured);
-            System.out.println(m.start + " " + m.end + " ");
+//            System.out.println(m.start + " " + m.end + " ");
             assertEquals(black, black_copy);
         }
 
@@ -61,21 +60,24 @@ class MoveTesting {
         Game black = new Game("8/4PPPP/6K1/8/8/1k6/pppp4/8 b - - 0 1");
         Game black_copy = new Game("8/4PPPP/6K1/8/8/1k6/pppp4/8 b - - 0 1");
 
-        ArrayList<Move> white_moves = white.getLegalMoves();
-        ArrayList<Move> black_moves = black.getLegalMoves();
+        List<Move> white_moves = white.getLegalMoves();
+        List<Move> black_moves = black.getLegalMoves();
+//        for (Move m : black_moves) {
+//            System.out.println(m);
+//        }
 
         for(Move m: white_moves){
             Optional<Piece> captured = white_copy.makeMove(m);
-            System.out.println(white_copy.toString());
+//            System.out.println(white_copy.toString());
             white_copy.unMakeMove(m, captured);
-            System.out.println(m.start + " " + m.end + " ");
+//            System.out.println(m.start + " " + m.end + " ");
             assertEquals(white, white_copy);
         }
 
         for(Move m: black_moves){
             Optional<Piece> captured = black_copy.makeMove(m);
             black_copy.unMakeMove(m, captured);
-            System.out.println(m.start + " " + m.end + " ");
+//            System.out.println(m.start + " " + m.end + " ");
             assertEquals(black, black_copy);
         }
 
@@ -88,6 +90,143 @@ class MoveTesting {
         assertEquals(new Game("1r5Q/4RK1n/7P/8/8/1p6/p7/8 b - - 0 1"), game);
         game.unMakeMove(takeKingPromote, temp);
         assertEquals(new Game("1r5k/4RKPn/7P/8/8/1p6/p7/8 w - - 0 1"), game);
+    }
+
+    @Test void pinnedRook(){
+        Game game = new Game("8/8/2K5/8/4R3/8/6b1/7k w - - 0 1");
+        /*    |   |   |   |   |   |   |
+           -------------------------------
+              |   |   |   |   |   |   |
+           -------------------------------
+              |   | ♚ |   |   |   |   |
+           -------------------------------
+              |   |   |   |   |   |   |
+           -------------------------------
+              |   |   |   | ♜ |   |   |
+           -------------------------------
+              |   |   |   |   |   |   |
+           -------------------------------
+              |   |   |   |   |   | ♗ |
+           -------------------------------
+              |   |   |   |   |   |   | ♔  */
+        var allLegalMoves = game.getLegalMoves();
+        assertEquals(8, allLegalMoves.size());
+    }
+
+    @Test void checkedKing(){
+        Game game = new Game("8/8/2K5/8/8/8/6b1/7k w - - 0 1");
+        /*    |   |   |   |   |   |   |
+           -------------------------------
+              |   |   |   |   |   |   |
+           -------------------------------
+              |   | ♚ |   |   |   |   |
+           -------------------------------
+              |   |   |   |   |   |   |
+           -------------------------------
+              |   |   |   |   |   |   |
+           -------------------------------
+              |   |   |   |   |   |   |
+           -------------------------------
+              |   |   |   |   |   | ♗ |
+           -------------------------------
+              |   |   |   |   |   |   | ♔  */
+        var allLegalMoves = game.getLegalMoves();
+        assertEquals(6, allLegalMoves.size());
+    }
+
+    @Test void screwedKing1(){
+        Game game = new Game("8/8/2K5/8/6b1/6b1/5bb1/5b1k w - - 0 1");
+        /*    |   |   |   |   |   |   |
+           -------------------------------
+              |   |   |   |   |   |   |
+           -------------------------------
+              |   | ♚ |   |   |   |   |
+           -------------------------------
+              |   |   |   |   |   |   |
+           -------------------------------
+              |   |   |   |   |   | ♗ |
+           -------------------------------
+              |   |   |   |   |   | ♗ |
+           -------------------------------
+              |   |   |   |   | ♗ | ♗ |
+           -------------------------------
+              |   |   |   |   | ♗ |   | ♔  */
+        var allLegalMoves = game.getLegalMoves();
+        assertEquals(0, allLegalMoves.size());
+    }
+
+    @Test void screwedKing2(){
+        Game game = new Game("5r2/1K5r/3r4/8/8/8/8/7k w - - 0 1");
+        /*    |   |   |   |   | ♖ |   |
+           -------------------------------
+              |   |   |   |   |   |   | ♖
+           -------------------------------
+              |   | ♚ |   |   |   |   |
+           -------------------------------
+              |   |   |   | ♖ |   |   |
+           -------------------------------
+              |   |   |   |   |   | ♗ |
+           -------------------------------
+              |   |   |   |   |   | ♗ |
+           -------------------------------
+              |   |   |   |   | ♗ | ♗ |
+           -------------------------------
+              |   |   |   |   | ♗ |   | ♔  */
+        System.out.println(game);
+        var allLegalMoves = game.getLegalMoves();
+        assertEquals(0, allLegalMoves.size());
+    }
+
+    @Test void checkedKing2(){
+        Game game = new Game("8/8/7q/8/6r1/8/5N2/7K w - - 0 1");
+        /* Current player: White
+        8     |   |   |   |   |   |   |
+           -------------------------------
+        7     |   |   |   |   |   |   |
+           -------------------------------
+        6     |   |   |   |   |   |   | ♕
+           -------------------------------
+        5     |   |   |   |   |   |   |
+           -------------------------------
+        4     |   |   |   |   |   | ♖ |
+           -------------------------------
+        3     |   |   |   |   |   |   |
+           -------------------------------
+        2     |   |   |   |   | ♞ |   |
+           -------------------------------
+        1     |   |   |   |   |   |   | ♚ */
+        var allLegalMoves = game.getLegalMoves();
+        assertEquals(1, allLegalMoves.size());
+        for (Move m : allLegalMoves){
+            System.out.println(m);
+        }
+    }
+
+    @Test void checkedKing3(){
+        Game game = new Game("8/8/3b4/7r/6P1/6N1/7K/8 w - - 0 1");
+        /* Current player: White
+        8     |   |   |   |   |   |   |
+           -------------------------------
+        7     |   |   |   |   |   |   |
+           -------------------------------
+        6     |   |   |   |   |   |   | ♕
+           -------------------------------
+        5     |   |   |   |   |   |   |
+           -------------------------------
+        4     |   |   |   |   |   | ♖ |
+           -------------------------------
+        3     |   |   |   |   |   |   |
+           -------------------------------
+        2     |   |   |   |   | ♞ |   |
+           -------------------------------
+        1     |   |   |   |   |   |   | ♚ */
+        System.out.println(game);
+        var allLegalMoves = game.getLegalMoves();
+        for (Move m : allLegalMoves){
+            System.out.println(m);
+        }
+        assertEquals(3, allLegalMoves.size());
+
     }
 
 }

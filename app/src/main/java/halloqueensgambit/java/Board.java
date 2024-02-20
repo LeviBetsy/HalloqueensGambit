@@ -127,6 +127,15 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
         }
     }
 
+    public Pos findKing(Side side){
+        for (var entry: this){
+            if (entry.getValue() instanceof King && entry.getValue().side() == side)
+                return entry.getKey();
+        }
+        //should never return null unless there is no king on the board
+        return null;
+    }
+
     public int evaluate(){
         int eval = 0;
         // iterate through the board
