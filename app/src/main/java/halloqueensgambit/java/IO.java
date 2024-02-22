@@ -29,7 +29,7 @@ public class IO {
 
     public static Move scanMove(String str){
         Pos startPos = new Pos((str.charAt(0) - 'a' + 1), (str.charAt(1) - '1' + 1));
-        Pos endPos = new Pos((str.charAt(3) - 'a' + 1), (str.charAt(4) - '1' + 1));
+        Pos endPos = new Pos((str.charAt(2) - 'a' + 1), (str.charAt(3) - '1' + 1));
         return new Move(startPos, endPos);
     }
 

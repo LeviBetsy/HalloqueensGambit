@@ -6,7 +6,6 @@ import halloqueensgambit.java.Game.Pos;
 import halloqueensgambit.java.Side;
 import halloqueensgambit.java.Move;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -35,6 +34,13 @@ public class Knight implements Piece{
             return " ♞ ";
         else
             return " ♘ ";
+    }
+
+    public String toLetter(){
+        if (side == Side.WHITE)
+            return "N";
+        else
+            return "n";
     }
 
     @Override

@@ -5,11 +5,8 @@ import halloqueensgambit.java.Side;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import halloqueensgambit.java.Game.Pos;
 import halloqueensgambit.java.Move;
-
-import java.util.ArrayList;
 
 public class Rook implements Piece {
     private final Side side;
@@ -35,6 +32,13 @@ public class Rook implements Piece {
             return " ♜ ";
         else
             return " ♖ ";
+    }
+
+    public String toLetter(){
+        if (side == Side.WHITE)
+            return "R";
+        else
+            return "r";
     }
 
     @Override

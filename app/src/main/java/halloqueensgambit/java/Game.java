@@ -39,11 +39,12 @@ public class Game {
         this.wKingPos = board.findKing(Side.WHITE);
         this.bKingPos = board.findKing(Side.BLACK);
         this.zobristNumbers = new long[769];
-        for (int i = 0; i < 769; i++) {
-            zobristNumbers[i] = (long) (Math.random() * Math.pow(2, 64) - 1);
-        }
-        generateZobristHash();
 
+        Random r = new Random();
+        for (int i = 0; i < 769; i++) {
+            zobristNumbers[i] = r.nextLong();
+        }
+        this.zobristHash = generateZobristHash();
     }
 
     // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1
@@ -61,6 +62,13 @@ public class Game {
         this.evaluation = board.evaluate();
         this.wKingPos = board.findKing(Side.WHITE);
         this.bKingPos = board.findKing(Side.BLACK);
+
+        this.zobristNumbers = new long[769];
+        Random r = new Random();
+        for (int i = 0; i < 769; i++) {
+            zobristNumbers[i] = r.nextLong();
+        }
+        this.zobristHash = generateZobristHash();
     }
 
     /* DATATYPE */
@@ -181,24 +189,24 @@ public class Game {
         return moves;
     }
 
-    private int getZobristIndex(Pos pos, Piece piece) {
-        int index = (pos.x - 1) + (pos.y - 1) * 8;
+    static int getZobristIndex(Pos pos, Piece piece) {
+        int index = (pos.x - 1) * 8 + (pos.y - 1);
 
         if (piece instanceof Pawn) {
-            index = 0;
+            index += 0;
         } else if (piece instanceof Knight) {
-            index = 1;
+            index += 64;
         } else if (piece instanceof Bishop) {
-            index = 2;
+            index += 128;
         } else if (piece instanceof Rook) {
-            index = 3;
+            index += 192;
         } else if (piece instanceof Queen) {
-            index = 4;
+            index += 256;
         } else {
-            index = 5;
+            index += 320;
         }
         if (piece.side() == Side.BLACK) {
-            index += 6;
+            index += 384;
         }
         return index;
     }
@@ -229,7 +237,6 @@ public class Game {
             hash = hash ^ zobristNumbers[sideIsBlack];
         }
 
-        this.zobristHash = hash;
         return hash;
     }
 
@@ -251,6 +258,9 @@ public class Game {
 
     public Optional<Piece> makeMove(Move move) {
         Optional<Piece> captured = this.board.lookup(move.end);
+        if(captured.isPresent()){
+            zobristHash = zobristHash ^ this.zobristNumbers[getZobristIndex(move.end, captured.get())];
+        }
 
         this.side = Side.opponent(side);
         zobristHash = zobristHash ^ this.zobristNumbers[768];
@@ -273,18 +283,14 @@ public class Game {
         // PROMOTION
         if (movingPiece instanceof Pawn) {
             if (move.end.y() == 1 || move.end.y() == 8) {
-                Queen newQueen = new Queen(movingPiece.side());
-                this.board.data.put(move.end, newQueen);
-                // handling evaluation
                 this.evaluation -= movingPiece.value();
-                this.evaluation += newQueen.value();
-            } else {
-                this.board.data.put(move.end, movingPiece);
+                movingPiece = new Queen(movingPiece.side());
+                this.evaluation += movingPiece.value();
             }
         }
 
         // CASTLING
-        else if (movingPiece instanceof King) {
+        if (movingPiece instanceof King) {
             int castleY = (movingPiece.side() == Side.WHITE) ? 1 : 8;
             // CASTLING QUEEN SIDE
             if (move.start.equals(new Pos(5, castleY))

@@ -6,10 +6,8 @@ import halloqueensgambit.java.Game.Pos;
 import halloqueensgambit.java.Side;
 import halloqueensgambit.java.Move;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Queen implements Piece{
     private final Side side;
@@ -33,6 +31,13 @@ public class Queen implements Piece{
             return " ♛ ";
         else
             return " ♕ ";
+    }
+
+    public String toLetter(){
+        if (side == Side.WHITE)
+            return "Q";
+        else
+            return "q";
     }
 
     @Override

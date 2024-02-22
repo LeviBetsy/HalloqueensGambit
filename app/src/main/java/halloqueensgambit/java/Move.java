@@ -1,7 +1,6 @@
 package halloqueensgambit.java;
 
 import halloqueensgambit.java.Game.Pos;
-import halloqueensgambit.java.piece.*;
 
 public class Move{
     public Pos start;

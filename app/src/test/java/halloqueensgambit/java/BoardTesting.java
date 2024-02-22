@@ -45,4 +45,10 @@ public class BoardTesting {
 
         assertEquals(game, tmp);
     }
+
+    @Test 
+    void testFenGeneration(){
+        Board b = Board.fromFEN("2r3k1/p1q2pp1/Q3p2p/b1Np4/2nP1P2/4P1P1/5K1P/2B1N3");
+        assertEquals("2r3k1/p1q2pp1/Q3p2p/b1Np4/2nP1P2/4P1P1/5K1P/2B1N3", b.toFEN());
+    }
 }

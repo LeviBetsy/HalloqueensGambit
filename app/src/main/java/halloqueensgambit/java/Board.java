@@ -83,6 +83,35 @@ public class Board implements Iterable<Map.Entry<Pos, Piece>> {
         return board;
     }
 
+    public String toFEN(){
+        StringBuilder fen = new StringBuilder();
+
+        for(int current_row = 8; current_row > 0; --current_row){
+            int offset = 0;
+            for(int current_column = 1; current_column <= 8; ++current_column){
+                Optional<Piece> p = lookup(current_column, current_row);
+                if(p.isPresent()){
+                    if(offset > 0){
+                        fen.append(offset);
+                        fen.append(p.get().toLetter());
+                        offset = 0;
+                    }else{
+                        fen.append(p.get().toLetter());
+                    }
+                }else{
+                    offset++;
+                }
+            }
+            if(offset > 0){
+                fen.append(offset);
+            }
+            if(current_row > 1){
+                fen.append("/");
+            }
+        }
+        return fen.toString();
+    }
+
     /*                               METHODS                           */
 
     //Any use of the Board's iterator is risking modifying the underlying tree

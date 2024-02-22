@@ -15,6 +15,7 @@ public interface Piece {
     void addLegalMoves(List<Move> moves, Set<Pos> pinnedPath, Pos pos, Game game);
     //need to pass board to know if should keep checking
     void addControllingSquares(Set<Pos> squares, Pos pos, Board board);
+    String toLetter();
 }
 
 

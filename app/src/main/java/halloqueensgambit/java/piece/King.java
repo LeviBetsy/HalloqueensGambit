@@ -36,6 +36,14 @@ public class King implements Piece{
             return " ♔ ";
     }
 
+    public String toLetter(){
+        if (side == Side.WHITE)
+            return "K";
+        else
+            return "k";
+    }
+
+
     //we can't really be pinned as a king so pinnedPath will always be null
     @Override
     public void addLegalMoves(List<Move> moves, Set<Pos> pinnedPath, Pos pos, Game game){

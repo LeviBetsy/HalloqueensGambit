@@ -1,81 +1,25 @@
 package halloqueensgambit.java;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import halloqueensgambit.java.Game.Pos;
-
-import halloqueensgambit.java.piece.King;
-import halloqueensgambit.java.piece.Piece;
+import java.util.HashMap;
 
 public class Solver {
     Game game;
     public static int numPositionsSeen = 0;
     public static record MoveRating(Move move, int rating){};
+    private HashMap<Long, MoveRating> transpositionTable = new HashMap<Long, MoveRating>();
 
     public Solver(Game game){
         this.game = game;
     }
 
-//    public int solve(int depth){
-//        numPositionsSeen = 0;
-////        this.originalDepth = depth;
-//        return search(depth);
-//    }
-//
-//    public int search(int depth){
-//        List<Move> allLegalMoves = this.game.getLegalMoves();
-//        Side currentSide = this.game.side();
-//
-//        if (allLegalMoves.isEmpty()) {
-//            if (this.game.inCheck())
-//                return (currentSide == Side.WHITE) ? -Game.kingValue : Game.kingValue;
-//            else
-//                return 0;
-//        }
-//
-//        if (depth == 0){
-//            return this.game.evaluation();
-//        }
-//
-//        int eval = (currentSide == Side.WHITE) ? -10000000 : 1000000;
-//        for(Move m: this.game.getLegalMoves()){
-//            Optional<Piece> captured = this.game.makeMove(m);
-//            numPositionsSeen++;
-//
-//            int newEval = search(depth - 1);
-//            //selecting the best move
-//            if (currentSide == Side.WHITE) {
-//                 if (newEval > 10000) {
-//                     eval = newEval;
-////                     if (depth == originalDepth)
-//                        this.bestMove = m;
-//                     this.game.unMakeMove(m, captured);
-//                     break;
-//                 } else if (newEval > eval){
-//                     eval = newEval;
-////                     if (depth == originalDepth)
-//                        this.bestMove = m;
-//                 }
-//            } else {
-//                if (newEval < -10000) {
-//                    eval = newEval;
-//                    if (depth == originalDepth)
-//                        this.bestMove = m;
-//                    this.game.unMakeMove(m, captured);
-//                    break;
-//                } else if (newEval < eval){
-//                    eval = newEval;
-//                    if (depth == originalDepth)
-//                        this.bestMove = m;
-//                }
-//            }
-//            this.game.unMakeMove(m, captured);
-//        }
-//        return eval;
-//    }
-
     public MoveRating alphaBetaSearch(int depth, int alpha, int beta){
+        long zobrist = this.game.getZobristHash();
+        if(this.transpositionTable.containsKey(zobrist)){
+            System.out.println("used transposition at depth="+depth);
+            return this.transpositionTable.get(zobrist);
+        }
+
         List<Move> allLegalMoves = this.game.getLegalMoves();
         Side currentSide = this.game.side();
 
@@ -98,8 +42,11 @@ public class Solver {
             MoveRating bestMoveRating = null;
             for (Move m : allLegalMoves){
                 var temp = game.makeMove(m);
-                int eval = alphaBetaSearch(depth - 1, thisAlpha, thisBeta).rating;
-                //if there is a game state where we took the enemy king, just take it
+                int eval = 0;
+                MoveRating MR = alphaBetaSearch(depth - 1, thisAlpha, thisBeta);
+                this.transpositionTable.put(game.getZobristHash(), MR);
+                eval = MR.rating;
+            //if there is a game state where we took the enemy king, just take it
                 if (eval >= Game.kingValue/10) {
                     game.unMakeMove(m, temp);
                     return new MoveRating(m, eval);
@@ -112,14 +59,18 @@ public class Solver {
                 if (thisBeta <= thisAlpha)
                     break;
             }
+            this.transpositionTable.put(game.getZobristHash(), bestMoveRating);
             return bestMoveRating;
         } else {
             int minEval = 1000000000;
             MoveRating bestMoveRating = null;
             for (Move m : allLegalMoves){
                 var temp = game.makeMove(m);
-                int eval = alphaBetaSearch(depth - 1, thisAlpha, thisBeta).rating;
-                //if there is a game state where we took the enemy king, just take it
+                int eval = 0;
+                MoveRating MR = alphaBetaSearch(depth - 1, thisAlpha, thisBeta);
+                this.transpositionTable.put(game.getZobristHash(), MR);
+                eval = MR.rating;
+            //if there is a game state where we took the enemy king, just take it
                 if (eval < -Game.kingValue/10) {
                     game.unMakeMove(m, temp);
                     return new MoveRating(m, eval);

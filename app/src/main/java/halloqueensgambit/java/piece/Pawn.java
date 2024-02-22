@@ -1,9 +1,7 @@
 package halloqueensgambit.java.piece;
 
 import halloqueensgambit.java.*;
-import halloqueensgambit.java.Game;
 import halloqueensgambit.java.Game.Pos;
-import halloqueensgambit.java.Side;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +33,13 @@ public class Pawn implements Piece{
             return " ♟ ";
         else
             return " ♙ ";
+    }
+
+    public String toLetter(){
+        if (side == Side.WHITE)
+            return "P";
+        else
+            return "p";
     }
 
     @Override
