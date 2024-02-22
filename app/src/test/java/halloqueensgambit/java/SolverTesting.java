@@ -10,7 +10,7 @@ import java.util.Scanner;
 import java.util.List;
 import java.util.Optional;
 import java.util.ArrayList;
-
+import java.util.HashMap;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -65,32 +65,44 @@ public class SolverTesting {
     }
 
     @Test void testZobristHashingBig(){
-        Game game = new Game("8/5PPP/6K1/8/8/8/1k6/8 w - - 0 1");
+        HashMap<Long, String> fens = new HashMap<Long, String>();
+        Game game = new Game("r3k2r/pppp1ppp/8/4p3/4P3/8/PPPP1PPP/R3K2R w KQkq - 0 1");
 
         List<Move> allLegalMoves1 = game.getLegalMoves();
         for(Move m1: allLegalMoves1){
             Optional<Piece> captured1 = game.makeMove(m1);
+            fens.put(game.generateZobristHash(), game.board().toFEN());
+            
             System.out.println(m1);
+
             
             List<Move> allLegalMoves2 = game.getLegalMoves();
             for(Move m2: allLegalMoves2){
                 Optional<Piece> captured2 = game.makeMove(m2);
+                fens.put(game.generateZobristHash(), game.board().toFEN());
+                
                 System.out.println("\t"+m2);
                 
                 List<Move> allLegalMoves3 = game.getLegalMoves();
                 for(Move m3: allLegalMoves3){
                     Optional<Piece> captured3 = game.makeMove(m3);
+                    fens.put(game.generateZobristHash(), game.board().toFEN());
+                    
                     System.out.println("\t\t"+m3);
+
                     assertEquals(game.generateZobristHash(), game.getZobristHash());
                     game.unMakeMove(m3, captured3);
+                    assertEquals(game.generateZobristHash(), game.getZobristHash());
                 }
                 
                 assertEquals(game.generateZobristHash(), game.getZobristHash());
                 game.unMakeMove(m2, captured2);
+                assertEquals(game.generateZobristHash(), game.getZobristHash());
             }
 
             assertEquals(game.generateZobristHash(), game.getZobristHash());
             game.unMakeMove(m1, captured1);
+            assertEquals(game.generateZobristHash(), game.getZobristHash());
         }
     }
 

@@ -340,18 +340,11 @@ public class Game {
             this.evaluation += captured.get().value();
         }
 
-        // put the moving piece back where it goes
-        this.board.data.put(move.start, movingPiece);
-        zobristHash = zobristHash ^ this.zobristNumbers[getZobristIndex(move.start, movingPiece)];
-
         // PROMOTION
         if (move.isPromotion) {
-            Pawn pawn = new Pawn(this.side);
-            this.board.data.put(move.start, pawn);
-            zobristHash = zobristHash ^ this.zobristNumbers[getZobristIndex(move.start, pawn)];
-            // handling evaluation
-            this.evaluation += pawn.value();
             this.evaluation -= movingPiece.value();
+            movingPiece = new Pawn(this.side);
+            this.evaluation += movingPiece.value();
         }
         // CHECK CASTLES
         else if (movingPiece instanceof King) {
@@ -378,6 +371,9 @@ public class Game {
                 }
             }
         }
+        // put the moving piece back where it goes
+        this.board.data.put(move.start, movingPiece);
+        zobristHash = zobristHash ^ this.zobristNumbers[getZobristIndex(move.start, movingPiece)];
     }
 
     // HELPER FUNCTION
